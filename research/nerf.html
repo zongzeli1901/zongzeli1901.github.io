@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>NeRF from Scratch | Zongze Li</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      background: #f6f8fb;
+      color: #172033;
+      line-height: 1.65;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(1120px, 88%);
+      margin: 0 auto;
+    }
+
+    /* NAV */
+    nav {
+      background: #0d1424;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .nav-inner {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .back-link {
+      color: #aeb8d0;
+      font-size: 0.92rem;
+      transition: 0.2s;
+    }
+
+    .back-link:hover {
+      color: white;
+    }
+
+    /* HERO */
+    header {
+      color: white;
+      padding: 92px 0 78px;
+      background:
+        radial-gradient(circle at 82% 18%, rgba(94, 119, 255, 0.25), transparent 30%),
+        linear-gradient(135deg, #0d1424, #131d35 60%, #172443);
+    }
+
+    .eyebrow {
+      color: #9fb0ff;
+      font-size: 0.78rem;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.8rem, 7vw, 5rem);
+      letter-spacing: -0.045em;
+      line-height: 1.03;
+    }
+
+    .hero-subtitle {
+      margin-top: 22px;
+      max-width: 760px;
+      color: #c7d0e8;
+      font-size: 1.12rem;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 28px;
+    }
+
+    .hero-tag {
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.18);
+      color: #dce3f5;
+      font-size: 0.82rem;
+    }
+
+    /* GENERAL */
+    section {
+      padding: 70px 0;
+    }
+
+    h2 {
+      margin: 0 0 24px;
+      font-size: 2.15rem;
+      letter-spacing: -0.03em;
+    }
+
+    h3 {
+      margin-top: 0;
+    }
+
+    .lead {
+      color: #4c586e;
+      max-width: 900px;
+      font-size: 1.08rem;
+    }
+
+    /* OVERVIEW */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 0.6fr;
+      gap: 22px;
+      margin-top: 28px;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid #e2e7f0;
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 6px 20px rgba(20,32,60,0.04);
+    }
+
+    .panel p {
+      color: #566176;
+      margin-bottom: 0;
+    }
+
+    .fact {
+      padding: 13px 0;
+      border-bottom: 1px solid #edf0f5;
+    }
+
+    .fact:last-child {
+      border-bottom: none;
+    }
+
+    .fact-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #929bad;
+      font-weight: 700;
+    }
+
+    .fact-value {
+      font-size: 1.02rem;
+      font-weight: 700;
+      margin-top: 3px;
+    }
+
+    /* PIPELINE */
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      margin-top: 30px;
+      align-items: stretch;
+    }
+
+    .step {
+      background: white;
+      border: 1px solid #dfe5ef;
+      border-radius: 16px;
+      padding: 22px 16px;
+      text-align: center;
+      box-shadow: 0 5px 18px rgba(20,32,60,0.035);
+    }
+
+    .step-number {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #eef2ff;
+      color: #4258d6;
+      font-weight: 700;
+      font-size: 0.8rem;
+      margin-bottom: 10px;
+    }
+
+    .step-title {
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    .step-desc {
+      margin-top: 7px;
+      color: #7b8597;
+      font-size: 0.78rem;
+    }
+
+    /* IMPLEMENTATION */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #e1e6ef;
+      border-radius: 18px;
+      padding: 25px;
+      transition: 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 35px rgba(20,32,60,0.08);
+    }
+
+    .label {
+      display: inline-block;
+      background: #eef2ff;
+      color: #485ed9;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      color: #596579;
+      margin-bottom: 0;
+      font-size: 0.94rem;
+    }
+
+    /* TRAINING */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .metric {
+      background: white;
+      border: 1px solid #e2e7ef;
+      border-radius: 15px;
+      padding: 21px 18px;
+    }
+
+    .metric-value {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .metric-name {
+      margin-top: 5px;
+      color: #858fa2;
+      font-size: 0.8rem;
+    }
+
+    /* CHALLENGES */
+    .challenge {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 20px;
+      padding: 24px 0;
+      border-bottom: 1px solid #e0e5ee;
+    }
+
+    .challenge:last-child {
+      border-bottom: none;
+    }
+
+    .challenge-title {
+      font-weight: 750;
+      font-size: 1.02rem;
+    }
+
+    .challenge-text {
+      color: #596579;
+    }
+
+    /* PAPER */
+    .paper-box {
+      background:
+        linear-gradient(135deg, rgba(60,85,220,0.08), rgba(255,255,255,1));
+      border: 1px solid #cfd8ff;
+      border-radius: 20px;
+      padding: 30px;
+    }
+
+    .paper-box p {
+      color: #566176;
+      margin-bottom: 0;
+    }
+
+    .paper-title {
+      font-weight: 800;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    /* FOOTER */
+    footer {
+      margin-top: 40px;
+      background: #111827;
+      color: #919cb1;
+      padding: 34px 0;
+      text-align: center;
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 900px) {
+      .overview-grid,
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .pipeline {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .pipeline,
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .challenge {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+
+<body>
+
+  <nav>
+    <div class="container nav-inner">
+      <div class="brand">Zongze Li</div>
+
+      <a class="back-link" href="../index.html">
+        ← Back to Portfolio
+      </a>
+    </div>
+  </nav>
+
+
+  <header>
+    <div class="container">
+
+      <div class="eyebrow">
+        Neural Rendering · Computer Vision · Research Project
+      </div>
+
+      <h1>
+        Neural Radiance Fields<br>
+        from Scratch
+      </h1>
+
+      <div class="hero-subtitle">
+        Implementing the core NeRF pipeline in PyTorch to understand how
+        continuous neural scene representations reconstruct 3D appearance
+        from a sparse collection of 2D views.
+      </div>
+
+      <div class="hero-tags">
+        <span class="hero-tag">PyTorch</span>
+        <span class="hero-tag">Neural Rendering</span>
+        <span class="hero-tag">Novel View Synthesis</span>
+        <span class="hero-tag">Positional Encoding</span>
+        <span class="hero-tag">Volume Rendering</span>
+      </div>
+
+    </div>
+  </header>
+
+
+  <section>
+    <div class="container">
+
+      <h2>Project Overview</h2>
+
+      <p class="lead">
+        The goal of this project was to understand NeRF at the implementation
+        level rather than treat it as a black box. We built the core pipeline
+        from scratch in PyTorch and trained it on the synthetic Lego scene,
+        following the formulation introduced by Mildenhall et al.
+      </p>
+
+      <div class="overview-grid">
+
+        <div class="panel">
+          <h3>What I Built</h3>
+
+          <p>
+            An end-to-end neural rendering pipeline that converts camera images
+            and poses into rays, samples 3D locations along those rays, encodes
+            continuous coordinates with sinusoidal features, predicts color and
+            density using an MLP, and reconstructs pixel colors through
+            differentiable volume rendering.
+          </p>
+        </div>
+
+
+        <div class="panel">
+
+          <div class="fact">
+            <div class="fact-label">Dataset</div>
+            <div class="fact-value">NeRF Synthetic · Lego</div>
+          </div>
+
+          <div class="fact">
+            <div class="fact-label">Framework</div>
+            <div class="fact-value">PyTorch</div>
+          </div>
+
+          <div class="fact">
+            <div class="fact-label">Scene Representation</div>
+            <div class="fact-value">Continuous 5D Radiance Field</div>
+          </div>
+
+          <div class="fact">
+            <div class="fact-label">Training Objective</div>
+            <div class="fact-value">Rendered RGB Reconstruction</div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <section>
+    <div class="container">
+
+      <h2>End-to-End Pipeline</h2>
+
+      <p class="lead">
+        The implementation follows the central NeRF idea: represent a scene as
+        a neural function mapping spatial position and viewing direction to
+        density and view-dependent color.
+      </p>
+
+      <div class="pipeline">
+
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-title">Input Views</div>
+          <div class="step-desc">
+            RGB images + camera poses
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-title">Ray Generation</div>
+          <div class="step-desc">
+            Pixel coordinates → world-space rays
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-title">Sampling</div>
+          <div class="step-desc">
+            Stratified samples along each ray
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">4</div>
+          <div class="step-title">Encoding</div>
+          <div class="step-desc">
+            Multi-frequency positional features
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">5</div>
+          <div class="step-title">NeRF MLP</div>
+          <div class="step-desc">
+            Predict RGB + volume density
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">6</div>
+          <div class="step-title">Rendering</div>
+          <div class="step-desc">
+            Composite samples into a novel view
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <section>
+    <div class="container">
+
+      <h2>Implementation Details</h2>
+
+      <div class="cards">
+
+        <div class="card">
+          <span class="label">Data Pipeline</span>
+
+          <h3>Camera-Aware Dataset Loading</h3>
+
+          <p>
+            Built a custom PyTorch Dataset pipeline to load RGB frames,
+            normalize image values, parse camera-to-world matrices, and preserve
+            camera field-of-view information required for geometric ray construction.
+          </p>
+        </div>
+
+
+        <div class="card">
+          <span class="label">Geometry</span>
+
+          <h3>World-Space Ray Generation</h3>
+
+          <p>
+            Converted pixel coordinates into camera-space directions and
+            transformed them into normalized world-space rays using camera
+            extrinsics. Vectorized the operation for full image grids.
+          </p>
+        </div>
+
+
+        <div class="card">
+          <span class="label">Representation</span>
+
+          <h3>Multi-Frequency Positional Encoding</h3>
+
+          <p>
+            Encoded continuous spatial coordinates and viewing directions using
+            sinusoidal frequency bands so the MLP could represent higher-frequency
+            scene geometry and appearance.
+          </p>
+        </div>
+
+
+        <div class="card">
+          <span class="label">Neural Network</span>
+
+          <h3>NeRF MLP Architecture</h3>
+
+          <p>
+            Implemented an 8-layer MLP with width 256 and a skip connection.
+            Position features predict density and latent features, while
+            view-direction features produce view-dependent RGB color.
+          </p>
+        </div>
+
+
+        <div class="card">
+          <span class="label">Sampling</span>
+
+          <h3>Stratified Ray Sampling</h3>
+
+          <p>
+            Sampled 64 locations along each camera ray using randomized
+            stratified sampling, allowing the neural field to be evaluated at
+            continuous spatial positions during optimization.
+          </p>
+        </div>
+
+
+        <div class="card">
+          <span class="label">Rendering</span>
+
+          <h3>Differentiable Volume Rendering</h3>
+
+          <p>
+            Converted per-sample colors and densities into rendered pixel values
+            using accumulated transmittance and alpha compositing, allowing
+            gradients to propagate through the entire rendering pipeline.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <section>
+    <div class="container">
+
+      <h2>Training Setup</h2>
+
+      <p class="lead">
+        Training was designed around randomly sampled rays rather than rendering
+        full-resolution views at every iteration, reducing compute requirements
+        during experimentation.
+      </p>
+
+      <div class="metrics">
+
+        <div class="metric">
+          <div class="metric-value">400 × 400</div>
+          <div class="metric-name">Image Resolution</div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-value">4096</div>
+          <div class="metric-name">Rays per Batch</div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-value">20K</div>
+          <div class="metric-name">Training Steps</div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-value">5e-4</div>
+          <div class="metric-name">Learning Rate</div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-value">Adam</div>
+          <div class="metric-name">Optimizer</div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <section>
+    <div class="container">
+
+      <h2>What Made It Difficult?</h2>
+
+
+      <div class="challenge">
+
+        <div class="challenge-title">
+          Camera Geometry
+        </div>
+
+        <div class="challenge-text">
+          Small mistakes in coordinate conventions, transform orientation,
+          or ray direction could produce completely black or distorted renders.
+          Debugging required inspecting simple rays and validating camera geometry
+          before blaming the network.
+        </div>
+
+      </div>
+
+
+      <div class="challenge">
+
+        <div class="challenge-title">
+          High-Frequency Detail
+        </div>
+
+        <div class="challenge-text">
+          Direct coordinate inputs produced overly smooth reconstructions.
+          Multi-frequency positional encoding was important for representing
+          sharper geometry and appearance.
+        </div>
+
+      </div>
+
+
+      <div class="challenge">
+
+        <div class="challenge-title">
+          Compute Cost
+        </div>
+
+        <div class="challenge-text">
+          Rendering full-resolution validation views repeatedly was too expensive
+          during training. Low-resolution previews and randomly sampled rays
+          made debugging and iteration much faster.
+        </div>
+
+      </div>
+
+
+      <div class="challenge">
+
+        <div class="challenge-title">
+          Sampling Efficiency
+        </div>
+
+        <div class="challenge-text">
+          This implementation focused on the coarse stratified-sampling stage.
+          Hierarchical importance sampling from the original NeRF formulation
+          remains a natural extension for allocating more samples near visible content.
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <section>
+    <div class="container">
+
+      <h2>Connection to the Original NeRF Paper</h2>
+
+      <div class="paper-box">
+
+        <div class="paper-title">
+          NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis
+        </div>
+
+        <p>
+          This project was based on the core formulation introduced by
+          Mildenhall et al. (2020): a continuous 5D neural scene representation
+          queried along camera rays and rendered using differentiable volume
+          rendering. Our implementation focused on reproducing and understanding
+          the core coarse-stage pipeline in PyTorch, while hierarchical sampling
+          was left as future work.
+        </p>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <section>
+    <div class="container">
+
+      <h2>What I Took Away</h2>
+
+      <p class="lead">
+        The most valuable part of this project was learning how tightly geometry,
+        representation, optimization, and rendering interact. A NeRF is not just
+        an MLP: correct camera rays, sampling, coordinate encoding, transmittance,
+        and optimization all have to work together before a meaningful scene appears.
+      </p>
+
+    </div>
+  </section>
+
+
+  <footer>
+    © 2026 Zongze Li · Research Portfolio · Built with GitHub Pages
+  </footer>
+
+</body>
+</html>
