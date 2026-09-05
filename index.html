@@ -3,36 +3,335 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zongze Li | Portfolio</title>
+
+  <title>Zongze Li | ML / AI / Software Engineering</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f7f8fa;
+      color: #1f2937;
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(1100px, 90%);
+      margin: 0 auto;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 72px 0 56px;
+    }
+
+    header h1 {
+      font-size: 3rem;
+      margin: 0 0 10px;
+    }
+
+    header p {
+      margin: 0;
+      color: #d1d5db;
+      font-size: 1.15rem;
+    }
+
+    .tagline {
+      margin-top: 18px;
+      max-width: 700px;
+      color: #e5e7eb;
+      font-size: 1rem;
+    }
+
+    .links {
+      margin-top: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .links a {
+      border: 1px solid #4b5563;
+      padding: 9px 15px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: 0.2s ease;
+    }
+
+    .links a:hover {
+      background: white;
+      color: #111827;
+    }
+
+    section {
+      padding: 52px 0;
+    }
+
+    h2 {
+      font-size: 2rem;
+      margin-top: 0;
+      margin-bottom: 22px;
+    }
+
+    .about {
+      max-width: 850px;
+      font-size: 1.05rem;
+      color: #374151;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 22px;
+      transition: 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 1.2rem;
+    }
+
+    .card p {
+      color: #4b5563;
+      font-size: 0.95rem;
+      margin-bottom: 14px;
+    }
+
+    .tech {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-bottom: 14px;
+    }
+
+    .project-link {
+      font-weight: 600;
+      color: #2563eb;
+    }
+
+    .stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .badge {
+      background: white;
+      border: 1px solid #d1d5db;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+    }
+
+    footer {
+      border-top: 1px solid #e5e7eb;
+      padding: 28px 0;
+      color: #6b7280;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 2.2rem;
+      }
+
+      header {
+        padding: 52px 0 40px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <h1>Zongze Li</h1>
 
-  <p>MSCS @ USC | ML / AI / Software Engineering</p>
+  <header>
+    <div class="container">
+      <h1>Zongze Li</h1>
 
-  <h2>About</h2>
-  <p>
-    I’m interested in building practical machine learning systems
-    and turning ideas into working products.
-  </p>
+      <p>MSCS @ USC | ML / AI / Software Engineering</p>
 
-  <h2>Selected Projects</h2>
+      <div class="tagline">
+        I’m interested in building practical machine learning systems,
+        exploring intelligent agents, and turning technical ideas into working products.
+      </div>
 
-  <ul>
-    <li>
-      <a href="https://zachlai23.github.io/RLSpaceInvaders/" target="_blank">
-        Deep Reinforcement Learning for Atari Space Invaders
-      </a>
-    </li>
+      <div class="links">
+        <a href="https://github.com/zongzeli1901" target="_blank">GitHub</a>
 
-    <li>Bayesian Latent Skill Inference</li>
-    <li>Neural Radiance Fields (NeRF)</li>
-    <li>Robust Visual Recognition on SVHN</li>
-    <li>Scalable Graph & Algorithm Optimization</li>
-  </ul>
+        <!-- Replace with your real LinkedIn URL -->
+        <a href="#" target="_blank">LinkedIn</a>
 
-  <h2>Tech Stack</h2>
-  <p>Python · PyTorch · Docker · Kubernetes · C/C++ · Git</p>
+        <!-- Replace with your real resume link later -->
+        <a href="#" target="_blank">Resume</a>
+
+        <a href="mailto:richard889usa@gmail.com">Email</a>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+      <h2>About</h2>
+
+      <div class="about">
+        I’m a Computer Science graduate student at USC with a background in
+        machine learning, reinforcement learning, computer vision, and ML systems.
+        I enjoy understanding how models behave, debugging unexpected results,
+        and building systems that connect algorithms with real applications.
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <h2>Selected Projects</h2>
+
+      <div class="project-grid">
+
+        <div class="card">
+          <h3>Deep Reinforcement Learning for Atari Space Invaders</h3>
+
+          <div class="tech">
+            PyTorch · DQN · QR-DQN · Rainbow DQN · PPO
+          </div>
+
+          <p>
+            Implemented and compared multiple deep reinforcement learning agents
+            and studied how architecture and training choices affected performance.
+          </p>
+
+          <a
+            class="project-link"
+            href="https://zachlai23.github.io/RLSpaceInvaders/"
+            target="_blank"
+          >
+            View Project →
+          </a>
+        </div>
+
+
+        <div class="card">
+          <h3>Bayesian Latent Skill Inference</h3>
+
+          <div class="tech">
+            Pyro · PyTorch · SVI · Bayesian Modeling
+          </div>
+
+          <p>
+            Built a probabilistic latent-variable model to estimate hidden player
+            skill and win probability from large-scale competitive match data.
+          </p>
+
+          <span class="project-link">
+            Project page coming soon
+          </span>
+        </div>
+
+
+        <div class="card">
+          <h3>Neural Radiance Fields (NeRF)</h3>
+
+          <div class="tech">
+            PyTorch · Neural Rendering · Positional Encoding
+          </div>
+
+          <p>
+            Built an end-to-end NeRF pipeline from scratch, including ray generation,
+            positional encoding, neural scene representation, and volume rendering.
+          </p>
+
+          <span class="project-link">
+            Project page coming soon
+          </span>
+        </div>
+
+
+        <div class="card">
+          <h3>Robust Visual Recognition on SVHN</h3>
+
+          <div class="tech">
+            PyTorch · CNN · Computer Vision
+          </div>
+
+          <p>
+            Designed and optimized a compact CNN for noisy real-world digit images,
+            with architecture comparison and training optimization.
+          </p>
+
+          <span class="project-link">
+            Project page coming soon
+          </span>
+        </div>
+
+
+        <div class="card">
+          <h3>Scalable Graph & Algorithm Optimization</h3>
+
+          <div class="tech">
+            Python · Graph Algorithms · BFS · Optimization
+          </div>
+
+          <p>
+            Explored scalable algorithm design through graph analytics,
+            sampled traversal, and optimization of search-based methods.
+          </p>
+
+          <span class="project-link">
+            Project page coming soon
+          </span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <h2>Tech Stack</h2>
+
+      <div class="stack">
+        <span class="badge">Python</span>
+        <span class="badge">PyTorch</span>
+        <span class="badge">Pyro</span>
+        <span class="badge">Docker</span>
+        <span class="badge">Kubernetes</span>
+        <span class="badge">C/C++</span>
+        <span class="badge">Git</span>
+        <span class="badge">Reinforcement Learning</span>
+        <span class="badge">Computer Vision</span>
+        <span class="badge">ML Systems</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      © 2026 Zongze Li
+    </div>
+  </footer>
+
 </body>
 </html>
