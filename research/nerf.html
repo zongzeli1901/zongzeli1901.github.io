@@ -535,6 +535,41 @@
       <h2>Implementation Details</h2>
 
       <div class="cards">
+        <div class="card">
+  <span class="label">Neural Representation</span>
+
+  <h3>1. Neural Scene Representation: Positional Encoding &amp; NeRF MLP</h3>
+          <p>
+  Encoded 3D positions and viewing directions with multi-frequency sinusoidal features,
+  then processed them through an 8-layer NeRF MLP with a skip connection to model
+  volumetric density and view-dependent RGB color.
+</p>
+         <pre><code>class PositionalEncoding(nn.Module):
+    def __init__(self, num_frequencies):
+        super().__init__()
+        self.freq_bands = 2.0 ** torch.linspace(
+            0., num_frequencies - 1, num_frequencies
+        )
+
+    def forward(self, x):
+        out = [x]
+        for freq in self.freq_bands:
+            out += [torch.sin(x * freq), torch.cos(x * freq)]
+        return torch.cat(out, dim=-1)
+
+
+class NeRFMLP(nn.Module):
+    def __init__(self, pos_L=10, dir_L=4, depth=8, width=256):
+        super().__init__()
+        self.pos_encoder = PositionalEncoding(pos_L)
+        self.dir_encoder = PositionalEncoding(dir_L)
+        self.skips = [4]
+
+        self.density_layer = nn.Linear(width, 1)
+        self.feature_layer = nn.Linear(width, width)
+        self.rgb_layer = nn.Linear(128, 3)</code></pre> 
+
+</div>
 
         <div class="card">
           <span class="label">Data Pipeline</span>
