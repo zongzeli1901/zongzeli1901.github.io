@@ -713,6 +713,29 @@ class NeRFMLP(nn.Module):
         full-resolution views at every iteration, reducing compute requirements
         during experimentation.
       </p>
+      <h3>Optimization &amp; Training Loop</h3>
+      <p>
+  Optimized the NeRF representation with Adam using randomly sampled rays,
+  an RGB reconstruction objective, and end-to-end backpropagation through
+  the differentiable rendering pipeline.
+</p>
+      <pre><code>model = NeRFMLP().to(device)
+optimizer = torch.optim.Adam(model.parameters(), lr=5e-4)
+
+rays_o, rays_d = get_rays(H, W, focal, c2w)
+rays_o = rays_o.reshape(-1, 3)
+rays_d = rays_d.reshape(-1, 3)
+
+indices = torch.randperm(rays_o.shape[0])[:1024]
+batch_ro = rays_o[indices]
+batch_rd = rays_d[indices]
+
+rgb_map, depth_map = render_rays(model, batch_ro, batch_rd)
+loss = F.mse_loss(rgb_map, target_rgb)
+
+optimizer.zero_grad()
+loss.backward()
+optimizer.step()</code></pre>
 
       <div class="metrics">
 
