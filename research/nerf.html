@@ -864,7 +864,39 @@ optimizer.step()</code></pre>
 
     </div>
   </section>
+<section>
+  <div class="container">
 
+    <h2>Training Dynamics &amp; Reconstruction Quality</h2>
+
+    <p class="lead">
+      Training exhibited a clear convergence pattern: reconstruction loss
+      decreased rapidly during early optimization while PSNR improved
+      steadily as the learned radiance field captured increasingly accurate
+      scene appearance.
+    </p>
+
+    <img
+      src="/assets/nerf/training_convergence.png"
+      alt="NeRF training convergence showing MSE loss and PSNR over 20K training steps"
+      style="
+        width: 100%;
+        margin-top: 24px;
+        border-radius: 18px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 12px 35px rgba(15, 23, 42, 0.10);
+      "
+    >
+
+    <p style="margin-top: 22px;">
+      MSE decreased from approximately 0.15 to below 0.01, while PSNR
+      increased into the mid-20 dB range before approaching a plateau.
+      The late-stage fluctuations suggest diminishing reconstruction gains
+      as optimization converged.
+    </p>
+
+  </div>
+</section>
 
   <section>
     <div class="container">
