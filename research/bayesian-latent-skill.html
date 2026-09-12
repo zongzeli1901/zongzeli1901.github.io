@@ -185,7 +185,7 @@
 
   <section class="section">
     <div class="wrap">
-      <div class="section-head"><div class="section-num">03</div><div><h2>Variational Inference with Pyro</h2><p class="lede">Because the exact posterior over 999 latent skills is not available in closed form, I approximate it with a mean-field variational family and optimize the ELBO using SVI.</p></div></div>
+      <div class="section-head"><div class="section-num">03</div><div><h2>Variational Inference with Pyro</h2><p class="lede">Because the exact posterior over 999 latent skills is not available in closed form, the model uses a mean-field variational family and optimizes the ELBO with SVI.</p></div></div>
       <div class="inference-grid">
         <div class="steps">
           <div class="step"><div class="step-num">01</div><div><b>Define the generative model</b><span>Place priors on player skills and express match outcomes through the Bernoulli likelihood.</span></div></div>
@@ -214,7 +214,18 @@
         <div class="bench best"><div class="bench-name">Pyro SVI Latent Skill</div><div class="bench-value">68.35%</div><div class="bench-sub">Log Loss 0.5850</div></div>
       </div>
       <div class="figure-grid" style="margin-top:42px">
-        
+        <div class="method-card" aria-label="Baseline improvement summary">
+          <div class="mini">Baseline Improvement</div>
+          <h3>Probability quality improves most.</h3>
+          <div class="formula" style="margin-top:18px">
+            <code>Δ Log Loss = (0.6619 − 0.5850) / 0.6619 = 11.6%</code>
+            <p>Relative reduction against the historical win-rate baseline.</p>
+          </div>
+          <div class="formula" style="margin-top:14px">
+            <code>Δ Accuracy = 0.6835 − 0.6594 = +0.0241</code>
+            <p>A +2.4 percentage-point gain in held-out winner prediction.</p>
+          </div>
+        </div>
         <div class="figure-note"><div class="label">Main Result</div><h3>Better probabilities, not just more correct labels.</h3><p>The SVI model improves winner prediction over the historical baseline, but the larger gain appears in log loss. That matters because the task is fundamentally probabilistic: a useful model should assign well-calibrated probability mass to outcomes, not only cross the 50% decision threshold.</p><div class="takeaway"><strong>+2.4 percentage points accuracy</strong><br>and <strong>11.6% lower log loss</strong> than the historical win-rate baseline.</div></div>
       </div>
     </div>
@@ -222,9 +233,9 @@
 
   <section class="section">
     <div class="wrap">
-      <div class="section-head"><div class="section-num">05</div><div><h2>Experiment 2 — Data Scaling</h2><p class="lede">I then tested whether additional match evidence makes the latent skill estimates more predictive, and where the marginal value of more data begins to flatten.</p></div></div>
+      <div class="section-head"><div class="section-num">05</div><div><h2>Experiment 2 — Data Scaling</h2><p class="lede">The second experiment tests how additional match evidence changes predictive quality, and where the marginal value of more data begins to flatten.</p></div></div>
       <div class="figure-grid">
-        <figure class="figure"><img src="../assets/training-data-scaling.png" alt="Validation accuracy rises and log loss falls as training data increases from 25 to 100 percent"></figure>
+        <figure class="figure"><img src="https://zongzeli1901.github.io/assets/training-data-scaling.png" alt="Validation accuracy rises and log loss falls as training data increases from 25 to 100 percent"></figure>
         <div class="figure-note"><div class="label">Scaling Behavior</div><h3>More evidence improves inference, with diminishing returns.</h3><p>Accuracy increases from 0.6420 at 25% of the training data to 0.6835 at 100%, while log loss falls from 0.6298 to 0.5850. The largest gains arrive early; improvement narrows substantially from 75% to 100%.</p><div class="takeaway">Even with only <strong>25% of the training data</strong>, the Bayesian model reaches <strong>0.6298 log loss</strong> — already better than the full-data historical baseline at 0.6619.</div></div>
       </div>
     </div>
@@ -232,9 +243,9 @@
 
   <section class="section">
     <div class="wrap">
-      <div class="section-head"><div class="section-num">06</div><div><h2>Experiment 3 — Posterior Uncertainty</h2><p class="lede">A Bayesian skill estimate should communicate how much evidence supports it. I checked this by comparing players with dramatically different observation counts.</p></div></div>
+      <div class="section-head"><div class="section-num">06</div><div><h2>Experiment 3 — Posterior Uncertainty</h2><p class="lede">A Bayesian skill estimate should communicate how much evidence supports it. This is tested by comparing players with dramatically different observation counts.</p></div></div>
       <div class="figure-grid">
-        <figure class="figure"><img src="../assets/posterior-uncertainty.png" alt="Posterior skill distributions for a frequent player and a rare player"></figure>
+        <figure class="figure"><img src="https://zongzeli1901.github.io/assets/posterior-uncertainty.png" alt="Posterior skill distributions for a frequent player and a rare player"></figure>
         <div class="figure-note"><div class="label">Uncertainty Check</div><h3>The model knows when evidence is weak.</h3><p>Bly appears in 4,933 matches and receives a sharply concentrated posterior. Albion appears in only 33 matches, so the posterior remains broad. The output is therefore not just a ranking score; it is a distribution whose width reflects evidential support.</p><div class="takeaway"><strong>More observations → narrower posterior.</strong><br>Less evidence remains visible as uncertainty instead of being hidden behind a single deterministic score.</div></div>
       </div>
     </div>
@@ -269,4 +280,3 @@
 <footer><div class="wrap footer-inner"><a class="back-link" href="../index.html">← Back to portfolio</a><span>Bayesian Latent Skill Inference</span></div></footer>
 </body>
 </html>
-
