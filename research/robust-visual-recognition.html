@@ -1,4 +1,4 @@
- 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -301,47 +301,172 @@
     }
 
     /* architecture */
+    .arch-summary{
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:56px;
+      align-items:start;
+      margin-bottom:42px;
+    }
+
+    .arch-summary p{
+      margin:0;
+      color:var(--text-soft);
+      font-size:17px;
+      line-height:1.72;
+    }
+
+    .arch-takeaway{
+      padding:24px 26px;
+      border-left:3px solid var(--accent);
+      background:linear-gradient(90deg,var(--accent-soft),rgba(238,245,255,.22));
+      border-radius:0 14px 14px 0;
+    }
+
+    .arch-takeaway b{
+      display:block;
+      margin-bottom:5px;
+      font-size:15px;
+    }
+
+    .arch-takeaway span{
+      color:var(--text-soft);
+      font-size:14px;
+      line-height:1.55;
+    }
+
     .arch-strip{
       display:grid;
       grid-template-columns:repeat(3,1fr);
-      gap:24px;
+      gap:18px;
     }
 
     .arch{
-      padding:26px 0 0;
-      border-top:1px solid var(--line);
+      position:relative;
+      padding:26px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
     }
 
     .arch.final{
-      border-top:2px solid var(--accent);
+      border-color:#b8d3fb;
+      background:linear-gradient(180deg,#fff 0%,#f7fbff 100%);
     }
+
+    .arch-kicker{
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--text-faint);
+    }
+
+    .arch.final .arch-kicker{color:var(--accent)}
 
     .arch h3{
-      margin:0 0 16px;
-      font-size:18px;
-      letter-spacing:-.015em;
+      margin:7px 0 18px;
+      font-size:20px;
+      letter-spacing:-.02em;
     }
 
-    .arch-flow{
-      font-size:14px;
-      line-height:1.8;
+    .arch-stack{
+      display:grid;
+      gap:8px;
+      min-height:134px;
+      align-content:start;
+    }
+
+    .layer{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:9px 11px;
+      border-radius:9px;
+      background:var(--bg-soft);
+      font-size:13px;
       color:var(--text-soft);
+    }
+
+    .layer strong{
+      color:var(--text);
+      font-weight:600;
+    }
+
+    .arch-fixed{
+      margin-top:12px;
+      font-size:12px;
+      color:var(--text-faint);
     }
 
     .arch-result{
       margin-top:24px;
       padding-top:18px;
       border-top:1px solid var(--line);
-      display:flex;
-      justify-content:space-between;
-      gap:16px;
-      font-size:14px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+      font-size:12px;
+      color:var(--text-soft);
     }
 
     .arch-result b{
-      font-size:20px;
-      letter-spacing:-.02em;
+      display:block;
+      margin-bottom:3px;
+      color:var(--text);
+      font-size:24px;
+      line-height:1.05;
+      letter-spacing:-.03em;
     }
+
+    .arch.final .arch-result b{color:var(--accent)}
+
+    .arch-comparison{
+      margin-top:28px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:22px;
+    }
+
+    .compare-panel{
+      padding:22px 24px;
+      border-top:1px solid var(--line);
+    }
+
+    .compare-panel h4{
+      margin:0 0 18px;
+      font-size:13px;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+      color:var(--text-soft);
+    }
+
+    .compare-row{
+      display:grid;
+      grid-template-columns:90px 1fr 64px;
+      gap:12px;
+      align-items:center;
+      margin:11px 0;
+      font-size:13px;
+    }
+
+    .compare-track{
+      height:8px;
+      border-radius:999px;
+      background:#edf1f5;
+      overflow:hidden;
+    }
+
+    .compare-track i{
+      display:block;
+      height:100%;
+      border-radius:inherit;
+      background:#aeb8c5;
+    }
+
+    .compare-row.best .compare-track i{background:var(--accent)}
+    .compare-row.best strong{color:var(--accent)}
 
     /* efficiency */
     .efficiency{
@@ -520,6 +645,11 @@
       .efficiency{
         grid-template-columns:1fr;
         gap:42px;
+      }
+
+      .arch-summary,
+      .arch-comparison{
+        grid-template-columns:1fr;
       }
 
       .arch-strip{
@@ -707,60 +837,83 @@
           <div>
             <h2>Architecture Search</h2>
             <p class="lede">
-              Three convolutional depths were compared to study the trade-off between representation quality, parameter count, and validation performance.
+              I varied convolutional depth while keeping the dense layer and dropout setting fixed, then compared validation accuracy against total parameter count.
             </p>
+          </div>
+        </div>
+
+        <div class="arch-summary">
+          <p>
+            The search moved from one to three convolutional stages: <strong>[32]</strong>, <strong>[32, 64]</strong>, and <strong>[32, 64, 128]</strong>. The goal was not simply to make the network deeper, but to test whether additional hierarchical feature extraction improved generalization efficiently.
+          </p>
+          <div class="arch-takeaway">
+            <b>Key finding — deeper, yet smaller.</b>
+            <span>The selected three-stage model improved validation accuracy from 83.8% to 92.0% while reducing total parameters from 1.05M to 356K.</span>
           </div>
         </div>
 
         <div class="arch-strip">
           <article class="arch">
+            <div class="arch-kicker">1 convolutional stage</div>
             <h3>Shallow CNN</h3>
-            <div class="arch-flow">
-              Conv 32<br>
-              ↓<br>
-              MaxPool<br>
-              ↓<br>
-              Dense 128
+            <div class="arch-stack">
+              <div class="layer"><span>Conv stage</span><strong>32 filters</strong></div>
             </div>
+            <div class="arch-fixed">Dense layer: 128 units · Dropout: 0.5</div>
             <div class="arch-result">
-              <span><b>83.8%</b><br>Validation</span>
-              <span><b>1.05M</b><br>Parameters</span>
+              <span><b>83.8%</b>Validation accuracy</span>
+              <span><b>1.05M</b>Parameters</span>
             </div>
           </article>
 
           <article class="arch">
+            <div class="arch-kicker">2 convolutional stages</div>
             <h3>Baseline CNN</h3>
-            <div class="arch-flow">
-              Conv 32<br>
-              ↓<br>
-              Conv 64<br>
-              ↓<br>
-              MaxPool → Dense 128
+            <div class="arch-stack">
+              <div class="layer"><span>Conv stage 1</span><strong>32 filters</strong></div>
+              <div class="layer"><span>Conv stage 2</span><strong>64 filters</strong></div>
             </div>
+            <div class="arch-fixed">Dense layer: 128 units · Dropout: 0.5</div>
             <div class="arch-result">
-              <span><b>90.1%</b><br>Validation</span>
-              <span><b>545K</b><br>Parameters</span>
+              <span><b>90.1%</b>Validation accuracy</span>
+              <span><b>545K</b>Parameters</span>
             </div>
           </article>
 
           <article class="arch final">
+            <div class="arch-kicker">Selected architecture</div>
             <h3>Deep CNN</h3>
-            <div class="arch-flow">
-              Conv 32<br>
-              ↓<br>
-              Conv 64<br>
-              ↓<br>
-              Conv 128 → Dense 128
+            <div class="arch-stack">
+              <div class="layer"><span>Conv stage 1</span><strong>32 filters</strong></div>
+              <div class="layer"><span>Conv stage 2</span><strong>64 filters</strong></div>
+              <div class="layer"><span>Conv stage 3</span><strong>128 filters</strong></div>
             </div>
+            <div class="arch-fixed">Dense layer: 128 units · Dropout: 0.5</div>
             <div class="arch-result">
-              <span><b class="accent">92.0%</b><br>Validation</span>
-              <span><b class="accent">356K</b><br>Parameters</span>
+              <span><b>92.0%</b>Validation accuracy</span>
+              <span><b>356K</b>Parameters</span>
             </div>
           </article>
         </div>
 
+        <div class="arch-comparison" aria-label="Architecture comparison">
+          <div class="compare-panel">
+            <h4>Validation accuracy</h4>
+            <div class="compare-row"><span>Shallow</span><div class="compare-track"><i style="width:91.1%"></i></div><strong>83.8%</strong></div>
+            <div class="compare-row"><span>Baseline</span><div class="compare-track"><i style="width:97.9%"></i></div><strong>90.1%</strong></div>
+            <div class="compare-row best"><span>Deep</span><div class="compare-track"><i style="width:100%"></i></div><strong>92.0%</strong></div>
+          </div>
+
+          <div class="compare-panel">
+            <h4>Parameter count</h4>
+            <div class="compare-row"><span>Shallow</span><div class="compare-track"><i style="width:100%"></i></div><strong>1.05M</strong></div>
+            <div class="compare-row"><span>Baseline</span><div class="compare-track"><i style="width:51.9%"></i></div><strong>545K</strong></div>
+            <div class="compare-row best"><span>Deep</span><div class="compare-track"><i style="width:34.0%"></i></div><strong>356K</strong></div>
+          </div>
+        </div>
+
         <p class="note">
-          Deeper did not mean larger: pooling reduced spatial dimensions enough that the deeper model used fewer total parameters while improving validation accuracy.
+          The report attributes the parameter reduction to progressively smaller spatial dimensions after pooling, which reduced the size of the downstream dense computation.
         </p>
       </div>
     </section>
