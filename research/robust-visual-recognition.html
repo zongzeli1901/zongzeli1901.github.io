@@ -468,60 +468,137 @@
     .compare-row.best .compare-track i{background:var(--accent)}
     .compare-row.best strong{color:var(--accent)}
 
-    /* efficiency */
+    /* training efficiency */
     .efficiency{
       display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:64px;
+      grid-template-columns:1.15fr .85fr;
+      gap:72px;
+      align-items:start;
+    }
+
+    .timeline{
+      display:grid;
+      gap:28px;
+    }
+
+    .timeline-row{
+      display:grid;
+      grid-template-columns:148px 1fr 84px;
+      gap:18px;
       align-items:center;
     }
 
-    .budget{
-      display:grid;
-      gap:24px;
-    }
-
-    .budget-row{
-      display:grid;
-      grid-template-columns:80px 1fr 52px;
-      gap:14px;
-      align-items:center;
+    .timeline-label b{
+      display:block;
       font-size:14px;
+      line-height:1.25;
     }
 
-    .bar{
-      height:12px;
+    .timeline-label span{
+      display:block;
+      margin-top:4px;
+      font-size:12px;
+      color:var(--text-faint);
+    }
+
+    .timeline-track{
+      position:relative;
+      height:10px;
       border-radius:999px;
       background:#edf1f5;
       overflow:hidden;
     }
 
-    .bar > i{
+    .timeline-track i{
       display:block;
       height:100%;
-      background:var(--accent);
       border-radius:inherit;
+      background:#aeb8c5;
     }
 
-    .big-callout{
+    .timeline-row.stop .timeline-track i{
+      background:var(--accent);
+    }
+
+    .timeline-value{
+      text-align:right;
+      font-size:14px;
+      font-weight:650;
+      color:var(--text);
+    }
+
+    .checkpoint{
+      margin-top:6px;
+      padding:18px 0 0 166px;
+      border-top:1px solid var(--line);
+      font-size:14px;
+      color:var(--text-soft);
+    }
+
+    .checkpoint strong{
+      color:var(--accent);
+    }
+
+    .efficiency-summary{
       padding:30px;
       border-radius:var(--radius);
       background:var(--bg-soft);
     }
 
-    .big-callout strong{
+    .efficiency-summary .kicker{
+      margin:0 0 10px;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.13em;
+      text-transform:uppercase;
+      color:var(--text-faint);
+    }
+
+    .efficiency-summary strong{
       display:block;
-      font-size:clamp(42px,5vw,66px);
-      line-height:1;
+      font-size:clamp(38px,4.7vw,60px);
+      line-height:1.02;
       letter-spacing:-.04em;
       color:var(--accent);
     }
 
-    .big-callout span{
-      display:block;
-      margin-top:12px;
-      color:var(--text-soft);
+    .efficiency-summary p{
+      margin:16px 0 0;
       font-size:15px;
+      line-height:1.65;
+      color:var(--text-soft);
+    }
+
+    .efficiency-meta{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:0;
+      margin-top:42px;
+      border-top:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+    }
+
+    .efficiency-meta div{
+      padding:18px 18px 18px 0;
+    }
+
+    .efficiency-meta div + div{
+      padding-left:18px;
+      border-left:1px solid var(--line);
+    }
+
+    .efficiency-meta b{
+      display:block;
+      margin-bottom:4px;
+      font-size:12px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      color:var(--text-faint);
+    }
+
+    .efficiency-meta span{
+      font-size:14px;
+      color:var(--text);
     }
 
     /* figure containers - intentionally constrained */
@@ -647,6 +724,10 @@
         gap:42px;
       }
 
+      .checkpoint{
+        padding-left:0;
+      }
+
       .arch-summary,
       .arch-comparison{
         grid-template-columns:1fr;
@@ -698,6 +779,30 @@
       .signal-list,
       .failure-grid{
         grid-template-columns:1fr;
+      }
+
+      .timeline-row{
+        grid-template-columns:1fr;
+        gap:8px;
+      }
+
+      .timeline-value{
+        text-align:left;
+      }
+
+      .efficiency-meta{
+        grid-template-columns:1fr;
+      }
+
+      .efficiency-meta div,
+      .efficiency-meta div + div{
+        padding:16px 0;
+        border-left:none;
+        border-top:1px solid var(--line);
+      }
+
+      .efficiency-meta div:first-child{
+        border-top:none;
       }
 
       .setup{
@@ -988,29 +1093,64 @@
           <div>
             <h2>Training Efficiency</h2>
             <p class="lede">
-              Early stopping preserved comparable validation performance while reducing the effective training budget.
+              Early stopping prevented unnecessary optimization after validation performance stopped improving, while preserving a comparable validation result.
             </p>
           </div>
         </div>
 
         <div class="efficiency">
-          <div class="budget">
-            <div class="budget-row">
-              <span>20 epochs</span>
-              <div class="bar"><i style="width:100%"></i></div>
-              <strong>100%</strong>
+          <div>
+            <div class="timeline">
+              <div class="timeline-row">
+                <div class="timeline-label">
+                  <b>Maximum budget</b>
+                  <span>upper training limit</span>
+                </div>
+                <div class="timeline-track">
+                  <i style="width:100%"></i>
+                </div>
+                <div class="timeline-value">40 epochs</div>
+              </div>
+
+              <div class="timeline-row stop">
+                <div class="timeline-label">
+                  <b>Actual stop</b>
+                  <span>early stopping triggered</span>
+                </div>
+                <div class="timeline-track">
+                  <i style="width:30%"></i>
+                </div>
+                <div class="timeline-value">12 epochs</div>
+              </div>
             </div>
-            <div class="budget-row">
-              <span>8 epochs</span>
-              <div class="bar"><i style="width:40%"></i></div>
-              <strong>40%</strong>
+
+            <div class="checkpoint">
+              Best checkpoint restored from <strong>epoch 8</strong>, reaching <strong>91.7% validation accuracy</strong>.
+            </div>
+
+            <div class="efficiency-meta">
+              <div>
+                <b>Patience</b>
+                <span>4 epochs</span>
+              </div>
+              <div>
+                <b>Selection signal</b>
+                <span>Validation loss</span>
+              </div>
+              <div>
+                <b>Best checkpoint</b>
+                <span>Epoch 8</span>
+              </div>
             </div>
           </div>
 
-          <div class="big-callout">
-            <strong>≈50%</strong>
-            <span>lower training budget while retaining similar validation performance.</span>
-          </div>
+          <aside class="efficiency-summary">
+            <p class="kicker">Efficiency gain</p>
+            <strong>~50% lower effective training budget</strong>
+            <p>
+              Compared with the regular 20-epoch training runs used during model tuning, early stopping delivered similar validation performance while roughly halving the effective training budget.
+            </p>
+          </aside>
         </div>
       </div>
     </section>
