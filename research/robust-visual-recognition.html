@@ -641,11 +641,28 @@
     }
 
     /* failure */
+    .failure-analysis{
+      align-items:center;
+    }
+
     .failure-grid{
       display:grid;
-      grid-template-columns:repeat(3,1fr);
+      grid-template-columns:repeat(2,1fr);
       gap:12px;
       margin-top:28px;
+    }
+
+    .failure-figure{
+      width:min(100%,480px);
+    }
+
+    .failure-figure img{
+      max-height:310px;
+      object-fit:contain;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:8px;
     }
 
     .failure{
@@ -819,6 +836,10 @@
 
       .figure img{
         max-height:300px;
+      }
+
+      .failure-figure{
+        width:min(100%,420px);
       }
     }
   </style>
@@ -1162,26 +1183,38 @@
           <div>
             <h2>Where the Model Fails</h2>
             <p class="lede">
-              Error analysis showed that most remaining mistakes concentrate in visually ambiguous inputs rather than clean examples.
+              The remaining errors are concentrated in genuinely difficult visual cases: blur, low contrast, partial occlusion, cropping, overlapping digits, and ambiguous shapes.
             </p>
           </div>
         </div>
 
-        <figure class="figure wide">
-          <div class="figure-frame">
-            Original misclassified-example grid will be inserted here.<br>
-            The final image will be constrained to this content width rather than stretched across the viewport.
-          </div>
-          <figcaption>Failure cases: blur, partial occlusion, low contrast, clutter, cropping, and ambiguous shapes.</figcaption>
-        </figure>
+        <div class="two-col failure-analysis">
+          <div class="copy">
+            <p>
+              Qualitative inspection shows that the model performs reliably when the target is clear and isolated, but degrades when context and image quality make the 32×32 crop ambiguous.
+            </p>
+            <p>
+              The confusion pattern is also systematic rather than random. Visually similar classes account for many mistakes, especially <strong>2→3</strong>, <strong>5→3</strong>, and <strong>0→6/9</strong>.
+            </p>
 
-        <div class="failure-grid">
-          <div class="failure"><b>Blur</b><span>Stroke boundaries become uncertain.</span></div>
-          <div class="failure"><b>Low contrast</b><span>Target structure blends into background texture.</span></div>
-          <div class="failure"><b>Occlusion</b><span>Only a partial visual pattern remains visible.</span></div>
-          <div class="failure"><b>Clutter</b><span>Nearby structures compete for attention.</span></div>
-          <div class="failure"><b>Cropping</b><span>The relevant object is partially outside the frame.</span></div>
-          <div class="failure"><b>Ambiguous shapes</b><span>Similar local patterns produce systematic confusion.</span></div>
+            <div class="failure-grid">
+              <div class="failure"><b>Blur</b><span>Stroke boundaries become uncertain.</span></div>
+              <div class="failure"><b>Low contrast</b><span>Foreground structure blends into the background.</span></div>
+              <div class="failure"><b>Occlusion</b><span>Only a partial visual pattern remains visible.</span></div>
+              <div class="failure"><b>Overlap</b><span>Nearby digits compete with the labeled target.</span></div>
+              <div class="failure"><b>Cropping</b><span>The target can be cut off at the frame boundary.</span></div>
+              <div class="failure"><b>Ambiguous shapes</b><span>Similar stroke patterns produce systematic confusion.</span></div>
+            </div>
+          </div>
+
+          <figure class="figure failure-figure">
+            <img src="../assets/visual-recognition/failure-cases.png"
+                 alt="Misclassified visual examples showing blur, occlusion, low contrast, overlap, cropping, and ambiguous shapes"
+                 loading="lazy">
+            <figcaption>
+              Representative misclassified test examples. The image is intentionally constrained so it supports the analysis without dominating the page.
+            </figcaption>
+          </figure>
         </div>
       </div>
     </section>
