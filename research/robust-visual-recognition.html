@@ -1,13 +1,941 @@
+ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Robust Visual Recognition under Real-World Noise</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Robust Visual Recognition under Real-World Noise — CNN architecture search, regularization, efficiency, and error analysis." />
+  <title>Robust Visual Recognition under Real-World Noise | Zongze Li</title>
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --bg-soft:#f7f8fa;
+      --text:#1f2328;
+      --text-soft:#5f6b7a;
+      --text-faint:#8b95a5;
+      --line:#e7ebf0;
+      --accent:#1a73e8;
+      --accent-soft:#eef5ff;
+      --max:1120px;
+      --reading:760px;
+      --radius:18px;
+      --shadow:0 8px 30px rgba(31,35,40,.06);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+      line-height:1.6;
+    }
+
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%;height:auto}
+
+    .wrap{
+      width:min(calc(100% - 40px), var(--max));
+      margin:0 auto;
+    }
+
+    /* NAV */
+    .nav{
+      position:sticky;
+      top:0;
+      z-index:20;
+      background:rgba(255,255,255,.92);
+      backdrop-filter:blur(16px);
+      border-bottom:1px solid rgba(231,235,240,.82);
+    }
+
+    .nav-inner{
+      height:64px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:24px;
+    }
+
+    .brand{
+      font-size:15px;
+      font-weight:650;
+      letter-spacing:.01em;
+    }
+
+    .nav-links{
+      display:flex;
+      gap:24px;
+      font-size:14px;
+      color:var(--text-soft);
+    }
+
+    .nav-links a:hover{color:var(--text)}
+
+    /* HERO */
+    .hero{
+      padding:92px 0 74px;
+    }
+
+    .eyebrow{
+      margin:0 0 18px;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:var(--accent);
+    }
+
+    .hero h1{
+      margin:0;
+      max-width:920px;
+      font-size:clamp(46px,7vw,78px);
+      line-height:.98;
+      letter-spacing:-.045em;
+      font-weight:700;
+    }
+
+    .hero-copy{
+      margin:28px 0 0;
+      max-width:760px;
+      font-size:clamp(19px,2.3vw,24px);
+      line-height:1.48;
+      letter-spacing:-.012em;
+      color:var(--text-soft);
+    }
+
+    .tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:30px;
+    }
+
+    .tag{
+      padding:8px 12px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      font-size:13px;
+      color:var(--text-soft);
+      background:#fff;
+    }
+
+    .metrics{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:0;
+      margin-top:64px;
+      border-top:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+    }
+
+    .metric{
+      padding:30px 28px 30px 0;
+    }
+
+    .metric + .metric{
+      padding-left:32px;
+      border-left:1px solid var(--line);
+    }
+
+    .metric strong{
+      display:block;
+      font-size:clamp(34px,4.2vw,54px);
+      line-height:1;
+      letter-spacing:-.035em;
+      font-weight:650;
+    }
+
+    .metric span{
+      display:block;
+      margin-top:10px;
+      font-size:14px;
+      color:var(--text-soft);
+    }
+
+    /* SECTIONS */
+    .section{
+      padding:96px 0;
+      border-top:1px solid var(--line);
+    }
+
+    .section-head{
+      display:grid;
+      grid-template-columns:80px 1fr;
+      gap:12px;
+      margin-bottom:44px;
+    }
+
+    .section-num{
+      padding-top:7px;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.14em;
+      color:var(--accent);
+    }
+
+    .section h2{
+      margin:0;
+      font-size:clamp(30px,4vw,44px);
+      line-height:1.08;
+      letter-spacing:-.03em;
+    }
+
+    .lede{
+      margin:18px 0 0;
+      max-width:760px;
+      font-size:18px;
+      line-height:1.7;
+      color:var(--text-soft);
+    }
+
+    .two-col{
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:72px;
+      align-items:start;
+    }
+
+    .copy p{
+      margin:0 0 18px;
+      font-size:17px;
+      color:var(--text-soft);
+    }
+
+    .signal-list{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+
+    .signal{
+      min-height:108px;
+      padding:18px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:var(--bg-soft);
+    }
+
+    .signal b{
+      display:block;
+      margin-bottom:6px;
+      font-size:14px;
+    }
+
+    .signal span{
+      font-size:13px;
+      color:var(--text-soft);
+    }
+
+    /* benchmark */
+    .bench-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:16px;
+    }
+
+    .bench{
+      padding:24px;
+      border-top:2px solid var(--line);
+      background:linear-gradient(180deg,#fff 0%,#fbfcfd 100%);
+    }
+
+    .bench.best{
+      border-top-color:var(--accent);
+    }
+
+    .bench-name{
+      font-size:14px;
+      color:var(--text-soft);
+    }
+
+    .bench-value{
+      margin-top:14px;
+      font-size:36px;
+      line-height:1;
+      font-weight:650;
+      letter-spacing:-.03em;
+    }
+
+    .bench.best .bench-value{color:var(--accent)}
+
+    /* table */
+    .table-wrap{
+      overflow-x:auto;
+      border:1px solid var(--line);
+      border-radius:16px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:650px;
+      font-size:14px;
+    }
+
+    th,td{
+      padding:15px 18px;
+      text-align:left;
+      border-bottom:1px solid var(--line);
+    }
+
+    th{
+      background:var(--bg-soft);
+      font-weight:650;
+      color:var(--text-soft);
+    }
+
+    tr:last-child td{border-bottom:none}
+    .best-row{background:var(--accent-soft)}
+    .best-row td{font-weight:650}
+    .accent{color:var(--accent)}
+
+    .note{
+      margin-top:18px;
+      font-size:14px;
+      color:var(--text-soft);
+    }
+
+    /* architecture */
+    .arch-strip{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:24px;
+    }
+
+    .arch{
+      padding:26px 0 0;
+      border-top:1px solid var(--line);
+    }
+
+    .arch.final{
+      border-top:2px solid var(--accent);
+    }
+
+    .arch h3{
+      margin:0 0 16px;
+      font-size:18px;
+      letter-spacing:-.015em;
+    }
+
+    .arch-flow{
+      font-size:14px;
+      line-height:1.8;
+      color:var(--text-soft);
+    }
+
+    .arch-result{
+      margin-top:24px;
+      padding-top:18px;
+      border-top:1px solid var(--line);
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      font-size:14px;
+    }
+
+    .arch-result b{
+      font-size:20px;
+      letter-spacing:-.02em;
+    }
+
+    /* efficiency */
+    .efficiency{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:64px;
+      align-items:center;
+    }
+
+    .budget{
+      display:grid;
+      gap:24px;
+    }
+
+    .budget-row{
+      display:grid;
+      grid-template-columns:80px 1fr 52px;
+      gap:14px;
+      align-items:center;
+      font-size:14px;
+    }
+
+    .bar{
+      height:12px;
+      border-radius:999px;
+      background:#edf1f5;
+      overflow:hidden;
+    }
+
+    .bar > i{
+      display:block;
+      height:100%;
+      background:var(--accent);
+      border-radius:inherit;
+    }
+
+    .big-callout{
+      padding:30px;
+      border-radius:var(--radius);
+      background:var(--bg-soft);
+    }
+
+    .big-callout strong{
+      display:block;
+      font-size:clamp(42px,5vw,66px);
+      line-height:1;
+      letter-spacing:-.04em;
+      color:var(--accent);
+    }
+
+    .big-callout span{
+      display:block;
+      margin-top:12px;
+      color:var(--text-soft);
+      font-size:15px;
+    }
+
+    /* figure containers - intentionally constrained */
+    .figure{
+      width:min(100%,520px);
+      margin:0 auto;
+    }
+
+    .figure.wide{
+      width:min(100%,820px);
+    }
+
+    .figure-frame{
+      min-height:260px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:var(--bg-soft);
+      color:var(--text-faint);
+      text-align:center;
+      font-size:14px;
+    }
+
+    .figure img{
+      width:100%;
+      max-height:340px;
+      object-fit:contain;
+      border-radius:14px;
+    }
+
+    figcaption{
+      margin-top:12px;
+      font-size:13px;
+      line-height:1.5;
+      color:var(--text-faint);
+      text-align:center;
+    }
+
+    /* failure */
+    .failure-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-top:28px;
+    }
+
+    .failure{
+      padding:18px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+    }
+
+    .failure b{
+      display:block;
+      font-size:14px;
+      margin-bottom:4px;
+    }
+
+    .failure span{
+      font-size:13px;
+      color:var(--text-soft);
+    }
+
+    /* setup */
+    .setup{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:0;
+      border-top:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+    }
+
+    .setup-item{
+      padding:24px 22px 24px 0;
+    }
+
+    .setup-item + .setup-item{
+      padding-left:22px;
+      border-left:1px solid var(--line);
+    }
+
+    .setup-item b{
+      display:block;
+      margin-bottom:6px;
+      font-size:12px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      color:var(--text-faint);
+    }
+
+    .setup-item span{
+      font-size:14px;
+      color:var(--text);
+    }
+
+    footer{
+      padding:54px 0 70px;
+      border-top:1px solid var(--line);
+      font-size:14px;
+      color:var(--text-soft);
+    }
+
+    .footer-inner{
+      display:flex;
+      justify-content:space-between;
+      gap:24px;
+      flex-wrap:wrap;
+    }
+
+    .back-link{
+      color:var(--accent);
+      font-weight:600;
+    }
+
+    @media (max-width:900px){
+      .two-col,
+      .efficiency{
+        grid-template-columns:1fr;
+        gap:42px;
+      }
+
+      .arch-strip{
+        grid-template-columns:1fr;
+      }
+
+      .setup{
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      .setup-item{
+        border-left:none !important;
+        border-top:1px solid var(--line);
+        padding:20px 0 !important;
+      }
+
+      .setup-item:nth-child(1),
+      .setup-item:nth-child(2){
+        border-top:none;
+      }
+    }
+
+    @media (max-width:720px){
+      .wrap{width:min(calc(100% - 28px),var(--max))}
+      .nav-links{display:none}
+      .hero{padding:70px 0 56px}
+      .hero h1{font-size:clamp(40px,12vw,58px)}
+      .metrics{grid-template-columns:1fr}
+      .metric{padding:24px 0}
+      .metric + .metric{
+        padding-left:0;
+        border-left:none;
+        border-top:1px solid var(--line);
+      }
+
+      .section{padding:72px 0}
+      .section-head{
+        grid-template-columns:1fr;
+        gap:8px;
+      }
+
+      .bench-grid{
+        grid-template-columns:1fr;
+      }
+
+      .signal-list,
+      .failure-grid{
+        grid-template-columns:1fr;
+      }
+
+      .setup{
+        grid-template-columns:1fr;
+      }
+
+      .setup-item:nth-child(2){
+        border-top:1px solid var(--line);
+      }
+
+      .figure{
+        width:min(100%,460px);
+      }
+
+      .figure img{
+        max-height:300px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <h1>Robust Visual Recognition under Real-World Noise</h1>
-  <p>Coming soon.</p>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html">Zongze Li</a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="../index.html#work">Work</a>
+        <a href="../index.html#research">Research</a>
+        <a href="../index.html#about">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <p class="eyebrow">Computer Vision · Model Optimization</p>
+        <h1>Robust Visual Recognition under Real-World Noise</h1>
+        <p class="hero-copy">
+          Architecture search, regularization, and error analysis for a compact convolutional vision model operating on noisy, low-resolution imagery.
+        </p>
+
+        <div class="tags" aria-label="Project technologies">
+          <span class="tag">PyTorch</span>
+          <span class="tag">CNN</span>
+          <span class="tag">Architecture Ablation</span>
+          <span class="tag">Regularization</span>
+          <span class="tag">Error Analysis</span>
+        </div>
+
+        <div class="metrics">
+          <div class="metric">
+            <strong>90.5%</strong>
+            <span>Test Accuracy</span>
+          </div>
+          <div class="metric">
+            <strong>0.906</strong>
+            <span>Weighted F1</span>
+          </div>
+          <div class="metric">
+            <strong>356K</strong>
+            <span>Parameters</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-num">01</div>
+          <div>
+            <h2>The Challenge</h2>
+            <p class="lede">
+              Real-world visual inputs are rarely clean. The central problem is to learn representations that remain reliable under blur, clutter, low contrast, partial occlusion, and competing visual structures.
+            </p>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="copy">
+            <p>
+              The input images are small RGB crops collected from street-view imagery. They contain illumination variation, neighboring objects, background structure, and ambiguous local patterns.
+            </p>
+            <p>
+              Rather than treating this as a simple classification exercise, the project focused on the model-design question: how much performance can be gained through architecture choice, regularization, and training control without increasing model size?
+            </p>
+          </div>
+
+          <div class="signal-list">
+            <div class="signal"><b>Blur</b><span>Fine visual structure becomes uncertain.</span></div>
+            <div class="signal"><b>Clutter</b><span>Background edges compete with the target.</span></div>
+            <div class="signal"><b>Low contrast</b><span>Foreground and background become harder to separate.</span></div>
+            <div class="signal"><b>Occlusion</b><span>Partial observations create ambiguous shapes.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-num">02</div>
+          <div>
+            <h2>Model Benchmark</h2>
+            <p class="lede">
+              The final CNN was evaluated against classical machine-learning baselines developed within the team.
+            </p>
+          </div>
+        </div>
+
+        <div class="bench-grid">
+          <div class="bench">
+            <div class="bench-name">Random Forest</div>
+            <div class="bench-value">70.1%</div>
+          </div>
+          <div class="bench">
+            <div class="bench-name">SVM</div>
+            <div class="bench-value">85.2%</div>
+          </div>
+          <div class="bench best">
+            <div class="bench-name">CNN</div>
+            <div class="bench-value">90.5%</div>
+          </div>
+        </div>
+
+        <p class="note">
+          The CNN produced the strongest test accuracy and weighted F1, reflecting the advantage of hierarchical feature learning on spatial image data.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-num">03</div>
+          <div>
+            <h2>Architecture Search</h2>
+            <p class="lede">
+              Three convolutional depths were compared to study the trade-off between representation quality, parameter count, and validation performance.
+            </p>
+          </div>
+        </div>
+
+        <div class="arch-strip">
+          <article class="arch">
+            <h3>Shallow CNN</h3>
+            <div class="arch-flow">
+              Conv 32<br>
+              ↓<br>
+              MaxPool<br>
+              ↓<br>
+              Dense 128
+            </div>
+            <div class="arch-result">
+              <span><b>83.8%</b><br>Validation</span>
+              <span><b>1.05M</b><br>Parameters</span>
+            </div>
+          </article>
+
+          <article class="arch">
+            <h3>Baseline CNN</h3>
+            <div class="arch-flow">
+              Conv 32<br>
+              ↓<br>
+              Conv 64<br>
+              ↓<br>
+              MaxPool → Dense 128
+            </div>
+            <div class="arch-result">
+              <span><b>90.1%</b><br>Validation</span>
+              <span><b>545K</b><br>Parameters</span>
+            </div>
+          </article>
+
+          <article class="arch final">
+            <h3>Deep CNN</h3>
+            <div class="arch-flow">
+              Conv 32<br>
+              ↓<br>
+              Conv 64<br>
+              ↓<br>
+              Conv 128 → Dense 128
+            </div>
+            <div class="arch-result">
+              <span><b class="accent">92.0%</b><br>Validation</span>
+              <span><b class="accent">356K</b><br>Parameters</span>
+            </div>
+          </article>
+        </div>
+
+        <p class="note">
+          Deeper did not mean larger: pooling reduced spatial dimensions enough that the deeper model used fewer total parameters while improving validation accuracy.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-num">04</div>
+          <div>
+            <h2>Regularization Ablation</h2>
+            <p class="lede">
+              Dropout and weight decay were isolated to determine which regularization choices actually improved generalization.
+            </p>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Configuration</th>
+                <th>Dropout</th>
+                <th>L2 Weight Decay</th>
+                <th>Validation Accuracy</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>No regularization</td>
+                <td>0.0</td>
+                <td>0</td>
+                <td>91.0%</td>
+              </tr>
+              <tr class="best-row">
+                <td>Moderate dropout</td>
+                <td>0.3</td>
+                <td>0</td>
+                <td class="accent">92.4%</td>
+              </tr>
+              <tr>
+                <td>Stronger dropout</td>
+                <td>0.5</td>
+                <td>0</td>
+                <td>91.8%</td>
+              </tr>
+              <tr>
+                <td>Dropout + L2</td>
+                <td>0.3</td>
+                <td>1e-4</td>
+                <td>92.3%</td>
+              </tr>
+              <tr>
+                <td>Stronger dropout + L2</td>
+                <td>0.5</td>
+                <td>1e-4</td>
+                <td>91.9%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="note">
+          Moderate dropout (p = 0.3) produced the strongest validation result. Adding L2 regularization did not provide a measurable gain.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-num">05</div>
+          <div>
+            <h2>Training Efficiency</h2>
+            <p class="lede">
+              Early stopping preserved comparable validation performance while reducing the effective training budget.
+            </p>
+          </div>
+        </div>
+
+        <div class="efficiency">
+          <div class="budget">
+            <div class="budget-row">
+              <span>20 epochs</span>
+              <div class="bar"><i style="width:100%"></i></div>
+              <strong>100%</strong>
+            </div>
+            <div class="budget-row">
+              <span>8 epochs</span>
+              <div class="bar"><i style="width:40%"></i></div>
+              <strong>40%</strong>
+            </div>
+          </div>
+
+          <div class="big-callout">
+            <strong>≈50%</strong>
+            <span>lower training budget while retaining similar validation performance.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-num">06</div>
+          <div>
+            <h2>Where the Model Fails</h2>
+            <p class="lede">
+              Error analysis showed that most remaining mistakes concentrate in visually ambiguous inputs rather than clean examples.
+            </p>
+          </div>
+        </div>
+
+        <figure class="figure wide">
+          <div class="figure-frame">
+            Original misclassified-example grid will be inserted here.<br>
+            The final image will be constrained to this content width rather than stretched across the viewport.
+          </div>
+          <figcaption>Failure cases: blur, partial occlusion, low contrast, clutter, cropping, and ambiguous shapes.</figcaption>
+        </figure>
+
+        <div class="failure-grid">
+          <div class="failure"><b>Blur</b><span>Stroke boundaries become uncertain.</span></div>
+          <div class="failure"><b>Low contrast</b><span>Target structure blends into background texture.</span></div>
+          <div class="failure"><b>Occlusion</b><span>Only a partial visual pattern remains visible.</span></div>
+          <div class="failure"><b>Clutter</b><span>Nearby structures compete for attention.</span></div>
+          <div class="failure"><b>Cropping</b><span>The relevant object is partially outside the frame.</span></div>
+          <div class="failure"><b>Ambiguous shapes</b><span>Similar local patterns produce systematic confusion.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-num">07</div>
+          <div>
+            <h2>Experimental Setup</h2>
+            <p class="lede">
+              The benchmark dataset appears here as the experimental substrate rather than the identity of the project.
+            </p>
+          </div>
+        </div>
+
+        <div class="setup">
+          <div class="setup-item">
+            <b>Dataset</b>
+            <span>Street View House Numbers (SVHN)</span>
+          </div>
+          <div class="setup-item">
+            <b>Input</b>
+            <span>32 × 32 RGB</span>
+          </div>
+          <div class="setup-item">
+            <b>Task</b>
+            <span>10-class visual classification</span>
+          </div>
+          <div class="setup-item">
+            <b>Framework</b>
+            <span>PyTorch</span>
+          </div>
+          <div class="setup-item">
+            <b>Evaluation</b>
+            <span>Accuracy · Weighted F1</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <a class="back-link" href="../index.html">← Back to portfolio</a>
+      <span>Robust Visual Recognition under Real-World Noise</span>
+    </div>
+  </footer>
 </body>
 </html>
