@@ -11,12 +11,12 @@
     :root{
       --bg:#ffffff;
       --bg-soft:#f7f8fa;
-      --text:#1f2328;
-      --text-soft:#5f6b7a;
-      --text-faint:#8b95a5;
+      --text:#3f464d;
+      --text-soft:#66717c;
+      --text-faint:#929ba5;
       --line:#e7ebf0;
-      --accent:#1a73e8;
-      --accent-soft:#eef5ff;
+      --accent:#0b6b4f;
+      --accent-soft:#eef7f3;
       --max:1120px;
       --reading:760px;
       --radius:18px;
@@ -62,7 +62,7 @@
     }
 
     .brand{
-      font-size:15px;
+      font-size:18px;
       font-weight:650;
       letter-spacing:.01em;
     }
@@ -858,7 +858,7 @@
     }
     .pipeline-line::after{
       content:""; position:absolute; inset:0;
-      background:linear-gradient(90deg,var(--accent),#6aa7ff);
+      background:linear-gradient(90deg,var(--accent),#63a98f);
       transform:scaleX(0); transform-origin:left center;
       transition:transform .9s cubic-bezier(.2,.8,.2,1);
     }
@@ -931,6 +931,33 @@
       }
       .pipeline-node{opacity:1!important; transform:none!important}
       .pipeline-line::after{transform:scaleX(1)!important}
+    }
+
+
+    h1, h2, h3,
+    .brand,
+    .metric strong,
+    .bench-value,
+    .arch h3,
+    .arch-result b,
+    .timeline-label b,
+    .timeline-value,
+    .efficiency-meta span,
+    .pipeline-node strong,
+    .setup-note b,
+    .failure b,
+    .signal b{
+      color:var(--text);
+    }
+
+    /* Accent values remain British green, overriding heading-gray where intended */
+    .bench.best .bench-value,
+    .arch-result .accent,
+    .result-node strong,
+    .efficiency-summary strong,
+    .accent,
+    .back-link{
+      color:var(--accent);
     }
 
   </style>
