@@ -842,6 +842,97 @@
         width:min(100%,420px);
       }
     }
+
+    .closing-section{overflow:hidden}
+    .pipeline{
+      position:relative;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:28px;
+      padding:18px 0 10px;
+      margin-top:10px;
+    }
+    .pipeline-line{
+      position:absolute; left:8px; right:calc(25% - 8px); top:39px; height:2px;
+      background:var(--line); overflow:hidden;
+    }
+    .pipeline-line::after{
+      content:""; position:absolute; inset:0;
+      background:linear-gradient(90deg,var(--accent),#6aa7ff);
+      transform:scaleX(0); transform-origin:left center;
+      transition:transform .9s cubic-bezier(.2,.8,.2,1);
+    }
+    .pipeline-node{
+      position:relative; padding-top:54px;
+      opacity:0; transform:translateY(10px);
+      transition:opacity .5s ease, transform .5s ease;
+    }
+    .pipeline-node:nth-of-type(2){transition-delay:0ms}
+    .pipeline-node:nth-of-type(3){transition-delay:110ms}
+    .pipeline-node:nth-of-type(4){transition-delay:220ms}
+    .pipeline-node:nth-of-type(5){transition-delay:330ms}
+    .pipeline-node::before{
+      content:""; position:absolute; top:30px; left:0;
+      width:16px; height:16px; border-radius:50%;
+      background:#fff; border:2px solid var(--line);
+      box-shadow:0 0 0 5px #fff;
+      transition:border-color .3s ease, background .3s ease;
+    }
+    .pipeline.is-visible .pipeline-line::after{transform:scaleX(1)}
+    .pipeline.is-visible .pipeline-node{opacity:1; transform:none}
+    .pipeline.is-visible .pipeline-node::before{
+      border-color:var(--accent); background:var(--accent);
+    }
+    .pipeline-kicker{
+      display:block; margin-bottom:8px;
+      font-size:11px; font-weight:700; letter-spacing:.14em;
+      text-transform:uppercase; color:var(--text-faint);
+    }
+    .pipeline-node strong{
+      display:block; font-size:clamp(20px,2.2vw,30px);
+      line-height:1.08; letter-spacing:-.025em; font-weight:650;
+    }
+    .pipeline-node small{
+      display:block; margin-top:8px;
+      font-size:13px; color:var(--text-soft);
+    }
+    .result-node strong{color:var(--accent)}
+    .pipeline.is-visible .result-node{animation:resultSettle .55s ease .75s both}
+    @keyframes resultSettle{
+      0%{transform:translateY(10px) scale(1)}
+      60%{transform:translateY(0) scale(1.02)}
+      100%{transform:translateY(0) scale(1)}
+    }
+    .setup-note{
+      display:flex; gap:14px; align-items:baseline;
+      margin-top:34px; padding-top:22px;
+      border-top:1px solid var(--line); font-size:14px;
+    }
+    .setup-note span{
+      color:var(--text-faint); text-transform:uppercase;
+      letter-spacing:.08em; font-size:11px; font-weight:700;
+    }
+    .setup-note b{font-weight:600}
+
+    @media (max-width:900px){
+      .pipeline{grid-template-columns:repeat(2,1fr); gap:34px 28px}
+      .pipeline-line{display:none}
+      .pipeline-node{padding-top:34px}
+      .pipeline-node::before{top:6px}
+    }
+    @media (max-width:720px){
+      .pipeline{grid-template-columns:1fr; gap:26px}
+      .pipeline-node{padding-top:30px}
+      .setup-note{align-items:flex-start; flex-direction:column; gap:6px}
+    }
+    @media (prefers-reduced-motion: reduce){
+      .pipeline-line::after,.pipeline-node,.result-node{
+        transition:none!important; animation:none!important;
+      }
+      .pipeline-node{opacity:1!important; transform:none!important}
+      .pipeline-line::after{transform:scaleX(1)!important}
+    }
+
   </style>
 </head>
 
@@ -1208,7 +1299,7 @@
           </div>
 
           <figure class="figure failure-figure">
-            <img src="../assets/failure-cases-clean.png"
+            <img src="../assets/visual-recognition/failure-cases.png"
                  alt="Misclassified visual examples showing blur, occlusion, low contrast, overlap, cropping, and ambiguous shapes"
                  loading="lazy">
             <figcaption>
@@ -1219,39 +1310,50 @@
       </div>
     </section>
 
-    <section class="section">
+
+    <section class="section closing-section">
       <div class="wrap">
         <div class="section-head">
           <div class="section-num">07</div>
           <div>
             <h2>Experimental Setup</h2>
             <p class="lede">
-              The benchmark dataset appears here as the experimental substrate rather than the identity of the project.
+              A controlled testbed for studying architecture depth, regularization, training efficiency, and robustness under noisy visual conditions.
             </p>
           </div>
         </div>
 
-        <div class="setup">
-          <div class="setup-item">
-            <b>Dataset</b>
-            <span>Street View House Numbers (SVHN)</span>
+        <div class="pipeline" data-pipeline>
+          <div class="pipeline-line" aria-hidden="true"></div>
+
+          <div class="pipeline-node">
+            <span class="pipeline-kicker">Input</span>
+            <strong>32 × 32 RGB</strong>
+            <small>real-world image crops</small>
           </div>
-          <div class="setup-item">
-            <b>Input</b>
-            <span>32 × 32 RGB</span>
+
+          <div class="pipeline-node">
+            <span class="pipeline-kicker">Model</span>
+            <strong>3-stage CNN</strong>
+            <small>PyTorch</small>
           </div>
-          <div class="setup-item">
-            <b>Task</b>
-            <span>10-class visual classification</span>
+
+          <div class="pipeline-node">
+            <span class="pipeline-kicker">Evaluation</span>
+            <strong>Accuracy + F1</strong>
+            <small>10-class classification</small>
           </div>
-          <div class="setup-item">
-            <b>Framework</b>
-            <span>PyTorch</span>
+
+          <div class="pipeline-node result-node">
+            <span class="pipeline-kicker">Result</span>
+            <strong><span class="countup" data-target="90.5" data-suffix="%">90.5%</span></strong>
+            <small><span class="countup" data-target="0.906" data-decimals="3">0.906</span> weighted F1</small>
           </div>
-          <div class="setup-item">
-            <b>Evaluation</b>
-            <span>Accuracy · Weighted F1</span>
-          </div>
+        </div>
+
+        <div class="setup-note">
+          <span>Dataset</span>
+          <b>Street View House Numbers (SVHN)</b>
         </div>
       </div>
     </section>
@@ -1263,5 +1365,54 @@
       <span>Robust Visual Recognition under Real-World Noise</span>
     </div>
   </footer>
+
+  <script>
+    (() => {
+      const pipeline = document.querySelector('[data-pipeline]');
+      if (!pipeline) return;
+
+      const reveal = () => pipeline.classList.add('is-visible');
+
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          if (entries.some(e => e.isIntersecting)) {
+            reveal();
+            observer.disconnect();
+          }
+        }, { threshold: 0.35 });
+        observer.observe(pipeline);
+      } else {
+        reveal();
+      }
+
+      const counters = pipeline.querySelectorAll('.countup');
+      const runCounter = (el) => {
+        const target = parseFloat(el.dataset.target || '0');
+        const decimals = Number(el.dataset.decimals || (String(target).includes('.') ? 1 : 0));
+        const suffix = el.dataset.suffix || '';
+        const duration = 700;
+        const start = performance.now();
+
+        const tick = (now) => {
+          const progress = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = (target * eased).toFixed(decimals) + suffix;
+          if (progress < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      };
+
+      if ('IntersectionObserver' in window) {
+        const countObserver = new IntersectionObserver((entries) => {
+          if (entries.some(e => e.isIntersecting)) {
+            counters.forEach(runCounter);
+            countObserver.disconnect();
+          }
+        }, { threshold: 0.55 });
+        countObserver.observe(pipeline);
+      }
+    })();
+  </script>
+
 </body>
 </html>
