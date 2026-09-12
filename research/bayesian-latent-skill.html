@@ -4,8 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Bayesian Latent Skill Inference — latent-variable modeling, stochastic variational inference, uncertainty quantification, and probabilistic evaluation on large-scale pairwise match outcomes." />
+  <meta name="description" content="Bayesian Latent Skill Inference — interpretable probabilistic modeling, stochastic variational inference, uncertainty quantification, and data-efficiency analysis on large-scale pairwise outcomes." />
   <title>Bayesian Latent Skill Inference | Zongze Li</title>
+
   <style>
     :root{
       --bg:#ffffff;
@@ -18,153 +19,605 @@
       --max:1120px;
       --radius:18px;
     }
+
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
+
     body{
-      margin:0;background:var(--bg);color:var(--text);
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-      -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;line-height:1.6;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+      line-height:1.6;
     }
+
     a{color:inherit;text-decoration:none}
     img{display:block;max-width:100%;height:auto}
-    .wrap{width:min(calc(100% - 40px),var(--max));margin:0 auto}
-    .nav{
-      position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);
-      backdrop-filter:blur(16px);border-bottom:1px solid rgba(231,235,240,.82)
+
+    .wrap{
+      width:min(calc(100% - 40px),var(--max));
+      margin:0 auto;
     }
-    .nav-inner{height:64px;display:flex;align-items:center;justify-content:space-between;gap:24px}
-    .brand{font-size:15px;font-weight:650;letter-spacing:.01em}
-    .nav-links{display:flex;gap:24px;font-size:14px;color:var(--text-soft)}
+
+    .nav{
+      position:sticky;
+      top:0;
+      z-index:20;
+      background:rgba(255,255,255,.92);
+      backdrop-filter:blur(16px);
+      border-bottom:1px solid rgba(231,235,240,.82);
+    }
+
+    .nav-inner{
+      height:64px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:24px;
+    }
+
+    .brand{
+      font-size:15px;
+      font-weight:650;
+      letter-spacing:.01em;
+    }
+
+    .nav-links{
+      display:flex;
+      gap:24px;
+      font-size:14px;
+      color:var(--text-soft);
+    }
 
     .hero{padding:92px 0 74px}
+
     .eyebrow{
-      margin:0 0 18px;font-size:12px;font-weight:700;letter-spacing:.16em;
-      text-transform:uppercase;color:var(--accent)
+      margin:0 0 18px;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:var(--accent);
     }
+
     .hero h1{
-      margin:0;max-width:980px;font-size:clamp(46px,7vw,78px);line-height:.98;
-      letter-spacing:-.045em;font-weight:700
+      margin:0;
+      max-width:980px;
+      font-size:clamp(46px,7vw,78px);
+      line-height:.98;
+      letter-spacing:-.045em;
+      font-weight:700;
     }
+
     .hero-copy{
-      margin:28px 0 0;max-width:820px;font-size:clamp(19px,2.3vw,24px);
-      line-height:1.48;letter-spacing:-.012em;color:var(--text-soft)
+      margin:28px 0 0;
+      max-width:850px;
+      font-size:clamp(19px,2.3vw,24px);
+      line-height:1.48;
+      letter-spacing:-.012em;
+      color:var(--text-soft);
     }
-    .tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+
+    .hero-thesis{
+      margin-top:24px;
+      max-width:820px;
+      padding-left:18px;
+      border-left:3px solid var(--accent);
+      font-size:15px;
+      line-height:1.7;
+      color:var(--text-soft);
+    }
+
+    .hero-thesis strong{color:var(--text)}
+
+    .tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:30px;
+    }
+
     .tag{
-      padding:8px 12px;border:1px solid var(--line);border-radius:999px;
-      font-size:13px;color:var(--text-soft);background:#fff
+      padding:8px 12px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      font-size:13px;
+      color:var(--text-soft);
+      background:#fff;
     }
+
     .metrics{
-      display:grid;grid-template-columns:repeat(4,1fr);margin-top:64px;
-      border-top:1px solid var(--line);border-bottom:1px solid var(--line)
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      margin-top:64px;
+      border-top:1px solid var(--line);
+      border-bottom:1px solid var(--line);
     }
+
     .metric{padding:30px 26px 30px 0}
-    .metric+.metric{padding-left:28px;border-left:1px solid var(--line)}
+
+    .metric+.metric{
+      padding-left:28px;
+      border-left:1px solid var(--line);
+    }
+
     .metric strong{
-      display:block;font-size:clamp(30px,3.9vw,50px);line-height:1;
-      letter-spacing:-.035em;font-weight:650
+      display:block;
+      font-size:clamp(30px,3.9vw,50px);
+      line-height:1;
+      letter-spacing:-.035em;
+      font-weight:650;
     }
-    .metric span{display:block;margin-top:10px;font-size:14px;color:var(--text-soft)}
 
-    .section{padding:96px 0;border-top:1px solid var(--line)}
-    .section-head{display:grid;grid-template-columns:80px 1fr;gap:12px;margin-bottom:44px}
-    .section-num{padding-top:7px;font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--accent)}
-    .section h2{margin:0;font-size:clamp(30px,4vw,44px);line-height:1.08;letter-spacing:-.03em}
-    .lede{margin:18px 0 0;max-width:830px;font-size:18px;line-height:1.7;color:var(--text-soft)}
+    .metric span{
+      display:block;
+      margin-top:10px;
+      font-size:14px;
+      color:var(--text-soft);
+    }
 
-    .two-col{display:grid;grid-template-columns:1.02fr .98fr;gap:72px;align-items:start}
-    .copy p{margin:0 0 18px;font-size:17px;color:var(--text-soft)}
-    .signal-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-    .signal{min-height:108px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--bg-soft)}
-    .signal b{display:block;margin-bottom:6px;font-size:14px}
-    .signal span{font-size:13px;color:var(--text-soft)}
+    .section{
+      padding:96px 0;
+      border-top:1px solid var(--line);
+    }
 
-    .model-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:64px;align-items:start}
-    .equation-stack{display:grid;gap:14px}
-    .equation-card{padding:22px 24px;border:1px solid var(--line);border-radius:16px;background:#fff}
-    .equation-card .mini{font-size:11px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--text-faint)}
+    .section-head{
+      display:grid;
+      grid-template-columns:80px 1fr;
+      gap:12px;
+      margin-bottom:44px;
+    }
+
+    .section-num{
+      padding-top:7px;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.14em;
+      color:var(--accent);
+    }
+
+    .section h2{
+      margin:0;
+      font-size:clamp(30px,4vw,44px);
+      line-height:1.08;
+      letter-spacing:-.03em;
+    }
+
+    .lede{
+      margin:18px 0 0;
+      max-width:850px;
+      font-size:18px;
+      line-height:1.7;
+      color:var(--text-soft);
+    }
+
+    .two-col{
+      display:grid;
+      grid-template-columns:1.03fr .97fr;
+      gap:72px;
+      align-items:start;
+    }
+
+    .copy p{
+      margin:0 0 18px;
+      font-size:17px;
+      color:var(--text-soft);
+    }
+
+    .copy strong{color:var(--text)}
+
+    .signal-list{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+
+    .signal{
+      min-height:108px;
+      padding:18px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:var(--bg-soft);
+    }
+
+    .signal b{
+      display:block;
+      margin-bottom:6px;
+      font-size:14px;
+    }
+
+    .signal span{
+      font-size:13px;
+      color:var(--text-soft);
+    }
+
+    .model-grid{
+      display:grid;
+      grid-template-columns:1.02fr .98fr;
+      gap:64px;
+      align-items:start;
+    }
+
+    .equation-stack{
+      display:grid;
+      gap:14px;
+    }
+
+    .equation-card{
+      padding:22px 24px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
+    }
+
+    .mini{
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.11em;
+      text-transform:uppercase;
+      color:var(--text-faint);
+    }
+
     .equation-card code{
-      display:block;margin-top:10px;font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
-      font-size:19px;color:var(--text)
+      display:block;
+      margin-top:10px;
+      font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+      font-size:19px;
+      color:var(--text);
     }
-    .equation-card p{margin:10px 0 0;font-size:14px;color:var(--text-soft)}
-    .model-note{padding:28px;border-radius:var(--radius);background:var(--bg-soft)}
-    .model-note .mini{font-size:12px;text-transform:uppercase;letter-spacing:.11em;color:var(--text-faint);font-weight:700}
-    .model-note h3{margin:8px 0 14px;font-size:26px;letter-spacing:-.025em}
-    .model-note p{margin:0 0 14px;font-size:16px;color:var(--text-soft)}
-    .model-note strong{color:var(--text)}
 
-    .inference-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:56px;align-items:start}
-    .steps{display:grid;gap:0;border-top:1px solid var(--line)}
-    .step{display:grid;grid-template-columns:48px 1fr;gap:18px;padding:19px 0;border-bottom:1px solid var(--line)}
-    .step-num{font-size:12px;font-weight:700;color:var(--text-faint)}
-    .step b{display:block;font-size:15px}
-    .step span{display:block;margin-top:4px;font-size:14px;color:var(--text-soft)}
-    .method-card{padding:28px;border-radius:var(--radius);background:var(--bg-soft)}
-    .method-card .mini{font-size:12px;text-transform:uppercase;letter-spacing:.11em;color:var(--text-faint);font-weight:700}
-    .method-card h3{margin:8px 0 18px;font-size:24px;letter-spacing:-.025em}
-    .method-row{display:flex;justify-content:space-between;gap:20px;padding:12px 0;border-top:1px solid var(--line);font-size:14px}
-    .method-row span:first-child{color:var(--text-soft)}
-    .formula{
-      margin-top:18px;padding:20px 22px;border-left:3px solid var(--accent);
-      background:#fff;border-radius:0 14px 14px 0
+    .equation-card p{
+      margin:10px 0 0;
+      font-size:14px;
+      color:var(--text-soft);
     }
-    .formula code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;font-size:16px;color:var(--text)}
-    .formula p{margin:9px 0 0;font-size:13px;color:var(--text-soft)}
+
+    .research-card{
+      padding:28px;
+      border-radius:var(--radius);
+      background:var(--bg-soft);
+    }
+
+    .research-card h3{
+      margin:8px 0 14px;
+      font-size:26px;
+      line-height:1.2;
+      letter-spacing:-.025em;
+    }
+
+    .research-card p{
+      margin:0 0 14px;
+      font-size:16px;
+      color:var(--text-soft);
+    }
+
+    .research-card strong{color:var(--text)}
+
+    .inference-grid{
+      display:grid;
+      grid-template-columns:1.08fr .92fr;
+      gap:56px;
+      align-items:start;
+    }
+
+    .steps{
+      display:grid;
+      gap:0;
+      border-top:1px solid var(--line);
+    }
+
+    .step{
+      display:grid;
+      grid-template-columns:48px 1fr;
+      gap:18px;
+      padding:19px 0;
+      border-bottom:1px solid var(--line);
+    }
+
+    .step-num{
+      font-size:12px;
+      font-weight:700;
+      color:var(--text-faint);
+    }
+
+    .step b{
+      display:block;
+      font-size:15px;
+    }
+
+    .step span{
+      display:block;
+      margin-top:4px;
+      font-size:14px;
+      color:var(--text-soft);
+    }
+
+    .method-card{
+      padding:28px;
+      border-radius:var(--radius);
+      background:var(--bg-soft);
+    }
+
+    .method-card h3{
+      margin:8px 0 18px;
+      font-size:24px;
+      letter-spacing:-.025em;
+    }
+
+    .method-row{
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+      padding:12px 0;
+      border-top:1px solid var(--line);
+      font-size:14px;
+    }
+
+    .method-row span:first-child{color:var(--text-soft)}
+
+    .formula{
+      margin-top:18px;
+      padding:20px 22px;
+      border-left:3px solid var(--accent);
+      background:#fff;
+      border-radius:0 14px 14px 0;
+    }
+
+    .formula code{
+      font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+      font-size:16px;
+      color:var(--text);
+    }
+
+    .formula p{
+      margin:9px 0 0;
+      font-size:13px;
+      color:var(--text-soft);
+    }
 
     .setup{
-      display:grid;grid-template-columns:repeat(5,1fr);
-      border-top:1px solid var(--line);border-bottom:1px solid var(--line)
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      border-top:1px solid var(--line);
+      border-bottom:1px solid var(--line);
     }
+
     .setup-item{padding:24px 22px 24px 0}
-    .setup-item+.setup-item{padding-left:22px;border-left:1px solid var(--line)}
-    .setup-item b{display:block;margin-bottom:6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint)}
-    .setup-item span{font-size:14px;color:var(--text)}
 
-    .bench-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-    .bench{padding:24px;border-top:2px solid var(--line);background:linear-gradient(180deg,#fff 0%,#fbfcfd 100%)}
+    .setup-item+.setup-item{
+      padding-left:22px;
+      border-left:1px solid var(--line);
+    }
+
+    .setup-item b{
+      display:block;
+      margin-bottom:6px;
+      font-size:12px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      color:var(--text-faint);
+    }
+
+    .setup-item span{
+      font-size:14px;
+      color:var(--text);
+    }
+
+    .bench-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:16px;
+    }
+
+    .bench{
+      padding:24px;
+      border-top:2px solid var(--line);
+      background:linear-gradient(180deg,#fff 0%,#fbfcfd 100%);
+    }
+
     .bench.best{border-top-color:var(--accent)}
-    .bench-name{font-size:14px;color:var(--text-soft)}
-    .bench-value{margin-top:14px;font-size:36px;line-height:1;font-weight:650;letter-spacing:-.03em}
-    .bench-sub{margin-top:8px;font-size:13px;color:var(--text-faint)}
-    .evidence-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:38px}
-    .evidence-card{padding:26px;border:1px solid var(--line);border-radius:16px;background:#fff}
-    .evidence-card .label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint)}
-    .evidence-card h3{margin:9px 0 12px;font-size:25px;line-height:1.15;letter-spacing:-.025em}
-    .evidence-card p{margin:0;font-size:15px;color:var(--text-soft)}
 
-    .figure-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:center}
-    .figure{width:min(100%,760px);margin:0 auto}
-    .figure img{width:100%;object-fit:contain;border-radius:14px}
+    .bench-name{
+      font-size:14px;
+      color:var(--text-soft);
+    }
+
+    .bench-value{
+      margin-top:14px;
+      font-size:36px;
+      line-height:1;
+      font-weight:650;
+      letter-spacing:-.03em;
+    }
+
+    .bench-sub{
+      margin-top:8px;
+      font-size:13px;
+      color:var(--text-faint);
+    }
+
+    .evidence-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:28px;
+      margin-top:38px;
+    }
+
+    .evidence-card{
+      padding:26px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
+    }
+
+    .evidence-card h3{
+      margin:9px 0 12px;
+      font-size:25px;
+      line-height:1.15;
+      letter-spacing:-.025em;
+    }
+
+    .evidence-card p{
+      margin:0;
+      font-size:15px;
+      color:var(--text-soft);
+    }
+
+    .figure-grid{
+      display:grid;
+      grid-template-columns:1.08fr .92fr;
+      gap:64px;
+      align-items:center;
+    }
+
+    .figure{
+      width:min(100%,760px);
+      margin:0 auto;
+    }
+
+    .figure img{
+      width:100%;
+      object-fit:contain;
+      border-radius:14px;
+    }
+
     .figure-note{padding:26px 0}
-    .figure-note .label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint)}
-    .figure-note h3{margin:9px 0 14px;font-size:28px;line-height:1.15;letter-spacing:-.025em}
-    .figure-note p{margin:0 0 14px;font-size:16px;color:var(--text-soft)}
-    .takeaway{margin-top:22px;padding:18px 20px;border-left:3px solid var(--accent);background:var(--bg-soft);font-size:14px;color:var(--text-soft)}
 
-    .finding-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-    .finding{padding:24px;border:1px solid var(--line);border-radius:16px;background:#fff}
-    .finding .num{font-size:11px;font-weight:700;color:var(--text-faint);letter-spacing:.12em}
-    .finding h3{margin:10px 0 10px;font-size:22px;line-height:1.2;letter-spacing:-.02em}
-    .finding p{margin:0;font-size:14px;color:var(--text-soft)}
+    .figure-note h3{
+      margin:9px 0 14px;
+      font-size:28px;
+      line-height:1.15;
+      letter-spacing:-.025em;
+    }
 
-    .future-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-    .future{padding:20px;border:1px solid var(--line);border-radius:15px}
-    .future b{display:block;font-size:14px;margin-bottom:5px}
-    .future span{font-size:13px;color:var(--text-soft)}
+    .figure-note p{
+      margin:0 0 14px;
+      font-size:16px;
+      color:var(--text-soft);
+    }
 
-    footer{padding:54px 0 70px;border-top:1px solid var(--line);font-size:14px;color:var(--text-soft)}
-    .footer-inner{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
+    .takeaway{
+      margin-top:22px;
+      padding:18px 20px;
+      border-left:3px solid var(--accent);
+      background:var(--bg-soft);
+      font-size:14px;
+      color:var(--text-soft);
+    }
+
+    .finding-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+    }
+
+    .finding{
+      padding:24px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
+    }
+
+    .finding .num{
+      font-size:11px;
+      font-weight:700;
+      color:var(--text-faint);
+      letter-spacing:.12em;
+    }
+
+    .finding h3{
+      margin:10px 0 10px;
+      font-size:22px;
+      line-height:1.2;
+      letter-spacing:-.02em;
+    }
+
+    .finding p{
+      margin:0;
+      font-size:14px;
+      color:var(--text-soft);
+    }
+
+    .rigor-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+    }
+
+    .rigor{
+      padding:26px;
+      border:1px solid var(--line);
+      border-radius:16px;
+    }
+
+    .rigor h3{
+      margin:8px 0 14px;
+      font-size:24px;
+      letter-spacing:-.02em;
+    }
+
+    .rigor ul{
+      margin:0;
+      padding-left:18px;
+      color:var(--text-soft);
+    }
+
+    .rigor li{margin:9px 0}
+
+    .future-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+    }
+
+    .future{
+      padding:20px;
+      border:1px solid var(--line);
+      border-radius:15px;
+    }
+
+    .future b{
+      display:block;
+      font-size:14px;
+      margin-bottom:5px;
+    }
+
+    .future span{
+      font-size:13px;
+      color:var(--text-soft);
+    }
+
+    footer{
+      padding:54px 0 70px;
+      border-top:1px solid var(--line);
+      font-size:14px;
+      color:var(--text-soft);
+    }
+
+    .footer-inner{
+      display:flex;
+      justify-content:space-between;
+      gap:24px;
+      flex-wrap:wrap;
+    }
+
     .back-link{font-weight:600}
 
     @media(max-width:900px){
-      .two-col,.model-grid,.inference-grid,.figure-grid{grid-template-columns:1fr;gap:42px}
+      .two-col,.model-grid,.inference-grid,.figure-grid,.rigor-grid{grid-template-columns:1fr;gap:42px}
       .future-grid{grid-template-columns:1fr 1fr}
       .finding-grid{grid-template-columns:1fr}
       .setup{grid-template-columns:repeat(2,1fr)}
-      .setup-item{border-left:none!important;border-top:1px solid var(--line);padding:20px 0!important}
+      .setup-item{
+        border-left:none!important;
+        border-top:1px solid var(--line);
+        padding:20px 0!important;
+      }
       .setup-item:nth-child(1),.setup-item:nth-child(2){border-top:none}
     }
+
     @media(max-width:720px){
       .wrap{width:min(calc(100% - 28px),var(--max))}
       .nav-links{display:none}
@@ -172,7 +625,11 @@
       .hero h1{font-size:clamp(40px,12vw,58px)}
       .metrics{grid-template-columns:1fr}
       .metric{padding:24px 0}
-      .metric+.metric{padding-left:0;border-left:none;border-top:1px solid var(--line)}
+      .metric+.metric{
+        padding-left:0;
+        border-left:none;
+        border-top:1px solid var(--line);
+      }
       .section{padding:72px 0}
       .section-head{grid-template-columns:1fr;gap:8px}
       .signal-list,.bench-grid,.future-grid,.evidence-grid{grid-template-columns:1fr}
@@ -181,6 +638,7 @@
     }
   </style>
 </head>
+
 <body>
 
 <header class="nav">
@@ -195,215 +653,347 @@
 </header>
 
 <main>
+
   <section class="hero">
     <div class="wrap">
-      <p class="eyebrow">Probabilistic Machine Learning · Bayesian Inference</p>
+      <p class="eyebrow">Probabilistic Machine Learning · Interpretable Inference</p>
+
       <h1>Bayesian Latent Skill Inference</h1>
+
       <p class="hero-copy">
-        A probabilistic latent-variable model for recovering hidden player skill from pairwise outcomes,
-        using stochastic variational inference to estimate both predictive strength and posterior uncertainty.
+        Recovering hidden player ability from pairwise outcomes with an interpretable probabilistic model,
+        stochastic variational inference, and explicit posterior uncertainty.
       </p>
+
+      <div class="hero-thesis">
+        <strong>Core result.</strong>
+        Preserving pairwise opponent structure improves held-out probability estimates over aggregate win rate,
+        while the learned posterior exposes when skill estimates are strongly or weakly supported by data.
+      </div>
 
       <div class="tags">
         <span class="tag">Pyro</span>
         <span class="tag">PyTorch</span>
-        <span class="tag">Stochastic Variational Inference</span>
         <span class="tag">Latent-Variable Modeling</span>
+        <span class="tag">Stochastic Variational Inference</span>
         <span class="tag">Uncertainty Quantification</span>
       </div>
 
       <div class="metrics">
-        <div class="metric"><strong>287,081</strong><span>Total Matches</span></div>
-        <div class="metric"><strong>999</strong><span>Players</span></div>
-        <div class="metric"><strong>94,007</strong><span>Held-Out Matches</span></div>
-        <div class="metric"><strong>−11.6%</strong><span>Log Loss vs. Historical Baseline</span></div>
+        <div class="metric">
+          <strong>287,081</strong>
+          <span>Total Matches</span>
+        </div>
+        <div class="metric">
+          <strong>999</strong>
+          <span>Players</span>
+        </div>
+        <div class="metric">
+          <strong>94,007</strong>
+          <span>Held-Out Matches</span>
+        </div>
+        <div class="metric">
+          <strong>−11.6%</strong>
+          <span>Log Loss vs. Historical Baseline</span>
+        </div>
       </div>
     </div>
   </section>
 
+
   <section class="section">
     <div class="wrap">
+
       <div class="section-head">
         <div class="section-num">01</div>
         <div>
           <h2>Research Question</h2>
           <p class="lede">
-            Can latent player ability be recovered from win/loss data alone—and can the model express how certain it is about each inferred skill?
+            Can repeated pairwise outcomes reveal a useful latent representation of player skill,
+            and can that representation quantify uncertainty rather than collapse each player into a single deterministic score?
           </p>
         </div>
       </div>
 
       <div class="two-col">
+
         <div class="copy">
           <p>
-            A historical win rate treats every victory as equivalent. That discards a key source of structure:
-            defeating a strong opponent should provide more evidence about skill than defeating a weak one.
+            A historical win rate is predictive, but it discards <strong>who was beaten</strong>.
+            The same victory should carry different information depending on the opponent's strength.
           </p>
+
           <p>
-            The project therefore treats skill as an unobserved variable and learns it from repeated pairwise comparisons.
-            The goal is not only to rank players, but to build a probabilistic representation that improves held-out win probabilities
-            and exposes uncertainty when evidence is sparse.
+            This motivates a structured probabilistic view:
+            player skill is latent, match outcomes are observed evidence,
+            and prediction depends on the <strong>relative skill difference</strong> between two players.
+          </p>
+
+          <p>
+            The technical question is therefore not simply whether a Bayesian model can rank players.
+            It is whether its representation produces better held-out probabilities,
+            uses evidence efficiently, and expresses uncertainty in a meaningful way.
           </p>
         </div>
 
         <div class="signal-list">
-          <div class="signal"><b>Observed Evidence</b><span>Pairwise win / loss outcomes.</span></div>
-          <div class="signal"><b>Latent Quantity</b><span>One hidden skill variable per player.</span></div>
-          <div class="signal"><b>Prediction Target</b><span>Probability that one player defeats another.</span></div>
-          <div class="signal"><b>Bayesian Output</b><span>Skill estimate plus posterior uncertainty.</span></div>
+          <div class="signal">
+            <b>Observed Evidence</b>
+            <span>Pairwise win / loss outcomes.</span>
+          </div>
+          <div class="signal">
+            <b>Latent Structure</b>
+            <span>One hidden skill variable per player.</span>
+          </div>
+          <div class="signal">
+            <b>Prediction</b>
+            <span>Pairwise win probability from relative skill.</span>
+          </div>
+          <div class="signal">
+            <b>Uncertainty</b>
+            <span>Posterior width reflects evidential support.</span>
+          </div>
         </div>
+
       </div>
     </div>
   </section>
 
+
   <section class="section">
     <div class="wrap">
+
       <div class="section-head">
         <div class="section-num">02</div>
         <div>
-          <h2>Latent-Variable Formulation</h2>
+          <h2>Probabilistic Representation</h2>
           <p class="lede">
-            The model represents each player with a latent skill variable and converts relative skill into match probability through a logistic likelihood.
+            A compact generative model preserves the relational structure of the match graph:
+            latent skills generate relative advantages, which generate observed outcomes.
           </p>
         </div>
       </div>
 
       <div class="model-grid">
+
         <div class="equation-stack">
+
           <div class="equation-card">
-            <div class="mini">Prior</div>
+            <div class="mini">Latent Prior</div>
             <code>sᵢ ~ N(0, 1)</code>
-            <p>Each player starts with an independent Gaussian prior over latent skill.</p>
+            <p>
+              Each player begins with an independent Gaussian prior over unobserved skill.
+            </p>
           </div>
 
           <div class="equation-card">
-            <div class="mini">Pairwise Link</div>
+            <div class="mini">Pairwise Probability</div>
             <code>P(i beats j) = σ(sᵢ − sⱼ)</code>
-            <p>Only the skill difference matters, so opponent strength directly changes the evidence supplied by each match.</p>
+            <p>
+              Prediction depends on relative—not absolute—skill.
+              Opponent strength therefore remains part of the evidence.
+            </p>
           </div>
 
           <div class="equation-card">
-            <div class="mini">Likelihood</div>
+            <div class="mini">Observed Outcome</div>
             <code>yᵢⱼ ~ Bernoulli(pᵢⱼ)</code>
-            <p>Observed match outcomes anchor the hidden skill variables to data.</p>
+            <p>
+              Match results connect the hidden representation to observed data through a probabilistic likelihood.
+            </p>
           </div>
+
         </div>
 
-        <div class="model-note">
-          <div class="mini">Why this formulation matters</div>
-          <h3>Pairwise structure carries information that aggregate win rate cannot.</h3>
+        <div class="research-card">
+          <div class="mini">Modeling Rationale</div>
+
+          <h3>Why model structure matters.</h3>
+
           <p>
-            A scalar historical win rate compresses every opponent into the same statistic.
-            The latent model instead preserves the relational structure of the data.
+            Historical win rate compresses an entire match history into one aggregate number.
+            The latent-variable model instead retains <strong>pairwise relational evidence</strong>.
           </p>
+
           <p>
-            A win over a high-skill opponent shifts the posterior differently from a win over a low-skill opponent.
-            That is the core modeling advantage being tested.
+            Beating a strong opponent and beating a weak opponent therefore induce different evidence about skill,
+            even when both observations are simply recorded as wins.
           </p>
-          <p><strong>The output is a distribution over skill—not just a deterministic ranking score.</strong></p>
+
+          <p>
+            This gives the model a transparent mathematical mechanism for improving prediction:
+            better representation of the evidence, rather than simply adding model capacity.
+          </p>
         </div>
+
       </div>
     </div>
   </section>
 
+
   <section class="section">
     <div class="wrap">
+
       <div class="section-head">
         <div class="section-num">03</div>
         <div>
           <h2>Posterior Inference with SVI</h2>
           <p class="lede">
-            Exact inference over 999 coupled latent skill variables is not available in closed form, so the posterior is approximated with a learnable mean-field Gaussian family.
+            The exact posterior over the latent skill vector is not analytically tractable,
+            so inference is converted into an optimization problem through a mean-field variational approximation.
           </p>
         </div>
       </div>
 
       <div class="inference-grid">
+
         <div class="steps">
+
           <div class="step">
             <div class="step-num">01</div>
             <div>
-              <b>Define the generative process</b>
-              <span>Sample player skills from the prior, then generate pairwise outcomes through the logistic Bernoulli likelihood.</span>
+              <b>Specify the generative model</b>
+              <span>
+                Priors define latent skills; the logistic Bernoulli likelihood links those skills to match outcomes.
+              </span>
             </div>
           </div>
+
           <div class="step">
             <div class="step-num">02</div>
             <div>
-              <b>Approximate the posterior</b>
-              <span>Use q(sᵢ)=N(μᵢ,σᵢ²), learning both a skill mean and a posterior uncertainty for every player.</span>
+              <b>Construct a variational posterior</b>
+              <span>
+                q(sᵢ)=N(μᵢ,σᵢ²) assigns each player a learned posterior mean and uncertainty.
+              </span>
             </div>
           </div>
+
           <div class="step">
             <div class="step-num">03</div>
             <div>
               <b>Optimize the ELBO</b>
-              <span>SVI balances match-data fit against KL divergence from the prior, producing a tractable posterior approximation.</span>
+              <span>
+                Stochastic Variational Inference balances explanatory fit to observed matches against divergence from the prior.
+              </span>
             </div>
           </div>
+
           <div class="step">
             <div class="step-num">04</div>
             <div>
-              <b>Predict held-out matches</b>
-              <span>Posterior skill estimates are mapped back into pairwise win probabilities and evaluated on unseen outcomes.</span>
+              <b>Evaluate unseen outcomes</b>
+              <span>
+                Learned skill estimates are mapped back into pairwise probabilities on 94,007 held-out matches.
+              </span>
             </div>
           </div>
+
         </div>
 
         <div class="method-card">
           <div class="mini">Inference Design</div>
-          <h3>Mean-field Variational Posterior</h3>
 
-          <div class="method-row"><span>Framework</span><strong>Pyro · PyTorch</strong></div>
-          <div class="method-row"><span>Posterior Family</span><strong>Gaussian</strong></div>
-          <div class="method-row"><span>Optimizer</span><strong>Adam</strong></div>
-          <div class="method-row"><span>Learning Rate</span><strong>0.03</strong></div>
-          <div class="method-row"><span>SVI Steps</span><strong>2,000</strong></div>
+          <h3>Mean-Field Gaussian Guide</h3>
+
+          <div class="method-row">
+            <span>Framework</span>
+            <strong>Pyro · PyTorch</strong>
+          </div>
+
+          <div class="method-row">
+            <span>Variational Family</span>
+            <strong>Gaussian</strong>
+          </div>
+
+          <div class="method-row">
+            <span>Optimizer</span>
+            <strong>Adam</strong>
+          </div>
+
+          <div class="method-row">
+            <span>Learning Rate</span>
+            <strong>0.03</strong>
+          </div>
+
+          <div class="method-row">
+            <span>SVI Steps</span>
+            <strong>2,000</strong>
+          </div>
 
           <div class="formula">
             <code>ELBO = E_q[log p(y|s)] − KL(q(s) || p(s))</code>
-            <p>The objective rewards explanations of observed outcomes while regularizing the approximate posterior toward the prior.</p>
+            <p>
+              The first term rewards explaining observed matches; the KL term regularizes the approximate posterior against the prior.
+            </p>
           </div>
         </div>
+
       </div>
     </div>
   </section>
 
+
   <section class="section">
     <div class="wrap">
+
       <div class="section-head">
         <div class="section-num">04</div>
         <div>
-          <h2>Evaluation Design</h2>
+          <h2>Evaluation Protocol</h2>
           <p class="lede">
-            The evaluation separates three questions: predictive advantage over simple baselines, data efficiency as evidence grows, and whether posterior width behaves like meaningful uncertainty.
+            The experiments were designed to test three distinct properties:
+            predictive value, data efficiency, and uncertainty behavior.
           </p>
         </div>
       </div>
 
       <div class="setup">
-        <div class="setup-item"><b>Training</b><span>193,074 matches</span></div>
-        <div class="setup-item"><b>Validation</b><span>94,007 matches</span></div>
-        <div class="setup-item"><b>Players</b><span>999 unique players</span></div>
-        <div class="setup-item"><b>Baselines</b><span>Random · Historical Win Rate</span></div>
-        <div class="setup-item"><b>Metrics</b><span>Accuracy · Log Loss</span></div>
+        <div class="setup-item">
+          <b>Training</b>
+          <span>193,074 matches</span>
+        </div>
+
+        <div class="setup-item">
+          <b>Validation</b>
+          <span>94,007 matches</span>
+        </div>
+
+        <div class="setup-item">
+          <b>Players</b>
+          <span>999 unique players</span>
+        </div>
+
+        <div class="setup-item">
+          <b>Baselines</b>
+          <span>Random · Historical Win Rate</span>
+        </div>
+
+        <div class="setup-item">
+          <b>Metrics</b>
+          <span>Accuracy · Log Loss</span>
+        </div>
       </div>
+
     </div>
   </section>
 
+
   <section class="section">
     <div class="wrap">
+
       <div class="section-head">
         <div class="section-num">05</div>
         <div>
-          <h2>Predictive Evidence</h2>
+          <h2>Predictive Advantage</h2>
           <p class="lede">
-            The first test asks whether the latent-skill formulation extracts more useful predictive structure from the same match history than simple aggregate baselines.
+            Does preserving pairwise opponent structure improve generalization over simpler summaries of the same match history?
           </p>
         </div>
       </div>
 
       <div class="bench-grid">
+
         <div class="bench">
           <div class="bench-name">Random</div>
           <div class="bench-value">50.36%</div>
@@ -421,41 +1011,55 @@
           <div class="bench-value">68.35%</div>
           <div class="bench-sub">Log Loss 0.5850</div>
         </div>
+
       </div>
 
       <div class="evidence-grid">
+
         <div class="evidence-card">
-          <div class="label">Accuracy</div>
-          <h3>+2.4 percentage points over the historical baseline.</h3>
+          <div class="mini">Winner Prediction</div>
+
+          <h3>+2.4 percentage points in held-out accuracy.</h3>
+
           <p>
-            The latent model makes more correct held-out winner predictions, showing that pairwise opponent information contains signal beyond aggregate historical performance.
+            The improvement over historical win rate indicates that pairwise opponent information contributes predictive signal beyond aggregate past performance.
           </p>
         </div>
 
         <div class="evidence-card">
-          <div class="label">Probability Quality</div>
+          <div class="mini">Probability Estimation</div>
+
           <h3>11.6% lower log loss.</h3>
+
           <p>
-            The stronger improvement appears in probability estimation, indicating that the posterior skill representation produces better-calibrated confidence in match outcomes—not just better binary decisions.
+            The larger gain appears in probabilistic prediction quality:
+            the model assigns higher likelihood to the outcomes that actually occur,
+            rather than merely improving the final winner label.
           </p>
         </div>
+
       </div>
+
     </div>
   </section>
 
+
   <section class="section">
     <div class="wrap">
+
       <div class="section-head">
         <div class="section-num">06</div>
         <div>
           <h2>Data Efficiency</h2>
           <p class="lede">
-            The second test measures how much additional match evidence improves the posterior and where the marginal value of more data begins to saturate.
+            If the representation is using pairwise evidence effectively,
+            useful probabilistic structure should emerge before the full training set is available.
           </p>
         </div>
       </div>
 
       <div class="figure-grid">
+
         <figure class="figure">
           <img
             src="https://zongzeli1901.github.io/assets/training-data-scaling.png"
@@ -464,38 +1068,51 @@
         </figure>
 
         <div class="figure-note">
-          <div class="label">Scaling Behavior</div>
-          <h3>More evidence improves inference, but the gains diminish.</h3>
+
+          <div class="mini">Scaling Behavior</div>
+
+          <h3>More evidence helps, but the marginal return shrinks.</h3>
+
           <p>
-            Accuracy rises from 0.6420 at 25% of the training data to 0.6835 at full scale,
+            Accuracy rises from 0.6420 with 25% of the training data to 0.6835 at full scale,
             while log loss falls from 0.6298 to 0.5850.
           </p>
+
           <p>
-            The improvement is strongest early and becomes much smaller from 75% to 100%,
-            suggesting that repeated pairwise comparisons progressively constrain the latent skill space.
+            The gain is largest at lower data fractions and becomes small from 75% to 100%,
+            consistent with repeated pairwise comparisons progressively constraining relative skill.
           </p>
+
           <div class="takeaway">
-            With only <strong>25% of the training data</strong>, the Bayesian model already achieves
-            <strong>0.6298 log loss</strong>—better than the full-data historical baseline at 0.6619.
+            With only <strong>25% of the training data</strong>,
+            the latent-skill model already reaches <strong>0.6298 log loss</strong>—
+            lower than the <strong>0.6619</strong> full-data historical baseline.
           </div>
+
         </div>
+
       </div>
+
     </div>
   </section>
 
+
   <section class="section">
     <div class="wrap">
+
       <div class="section-head">
         <div class="section-num">07</div>
         <div>
           <h2>Posterior Uncertainty</h2>
           <p class="lede">
-            A Bayesian representation is only useful if uncertainty reflects evidential support. The posterior should be narrow when data is abundant and remain broad when observations are scarce.
+            A Bayesian model should not hide weak evidence behind a precise-looking point estimate.
+            Posterior width provides a direct way to inspect how much information supports each inferred skill.
           </p>
         </div>
       </div>
 
       <div class="figure-grid">
+
         <figure class="figure">
           <img
             src="https://zongzeli1901.github.io/assets/posterior-uncertainty.png"
@@ -504,94 +1121,185 @@
         </figure>
 
         <div class="figure-note">
-          <div class="label">Uncertainty Check</div>
-          <h3>The posterior exposes when the model has weak evidence.</h3>
+
+          <div class="mini">Posterior Sanity Check</div>
+
+          <h3>Observation frequency is reflected in posterior width.</h3>
+
           <p>
             Bly appears in 4,933 matches and receives a sharply concentrated posterior.
             Albion appears in only 33 matches, so the posterior remains substantially wider.
           </p>
+
           <p>
-            The model therefore does more than produce a rank ordering: posterior variance communicates how strongly the observed data supports each estimate.
+            Posterior uncertainty behaves consistently with the amount of available evidence:
+            frequent players receive sharply concentrated posteriors, while rare players remain substantially more uncertain.
           </p>
+
+          <p>
+            The importance of this result is not that Bayesian inference should produce narrower posteriors with more data—that is expected.
+            Rather, the experiment shows that uncertainty itself becomes diagnostic information:
+            the model exposes where the observed evidence is insufficient instead of hiding that limitation behind a single deterministic score.
+          </p>
+
+          <p>
+            This shifts the next research question from <em>whether</em> skill can be inferred to
+            <em>what latent or contextual factors explain the uncertainty that remains</em>.
+            Race, map, game version, and time-varying ability are natural candidates for extending the model.
+          </p>
+
           <div class="takeaway">
             <strong>More observations → narrower posterior.</strong><br>
-            Sparse evidence remains visible as uncertainty instead of being hidden behind a single score.
+            Remaining uncertainty points toward missing structure in the current model, not merely prediction error.
           </div>
+
         </div>
+
       </div>
+
     </div>
   </section>
 
+
   <section class="section">
     <div class="wrap">
+
       <div class="section-head">
         <div class="section-num">08</div>
         <div>
-          <h2>What the Experiments Establish</h2>
+          <h2>What the Evidence Supports</h2>
           <p class="lede">
-            Across predictive performance, data scaling, and posterior width, the experiments point to the same conclusion: model structure matters because it determines how evidence is represented.
+            The strongest version of this project is not an exaggerated claim of a new Bayesian algorithm.
+            It is a controlled demonstration of how structured probabilistic representation changes prediction and uncertainty.
           </p>
         </div>
       </div>
 
       <div class="finding-grid">
+
         <div class="finding">
           <div class="num">01</div>
-          <h3>Relational evidence beats aggregate statistics.</h3>
-          <p>Pairwise opponent structure captures information that a single historical win-rate statistic discards.</p>
+          <h3>Relational structure adds predictive value.</h3>
+          <p>
+            Pairwise opponent information improves held-out performance over an aggregate historical win-rate baseline.
+          </p>
         </div>
 
         <div class="finding">
           <div class="num">02</div>
-          <h3>Probability quality improves more than raw accuracy.</h3>
-          <p>The largest gain appears in log loss, which is the more informative metric for a probabilistic prediction system.</p>
+          <h3>Model structure can improve data efficiency.</h3>
+          <p>
+            A 25%-data latent model already outperforms the full-data historical baseline in log loss.
+          </p>
         </div>
 
         <div class="finding">
           <div class="num">03</div>
-          <h3>Uncertainty is part of the prediction.</h3>
-          <p>The posterior width changes with observation count, giving the model a principled way to represent confidence.</p>
+          <h3>Uncertainty remains observable.</h3>
+          <p>
+            Posterior width changes substantially with the amount of evidence available for a player.
+          </p>
         </div>
+
       </div>
+
     </div>
   </section>
 
+
   <section class="section">
     <div class="wrap">
+
       <div class="section-head">
         <div class="section-num">09</div>
         <div>
-          <h2>Model Extensions</h2>
+          <h2>Research Limits</h2>
           <p class="lede">
-            The current formulation intentionally isolates player identity and pairwise outcomes. The remaining uncertainty points toward richer latent structure rather than a fundamentally different modeling framework.
+            A credible probabilistic analysis also requires being precise about what these experiments do not establish.
+          </p>
+        </div>
+      </div>
+
+      <div class="rigor-grid">
+
+        <div class="rigor">
+          <div class="mini">Supported</div>
+          <h3>What the current experiments show</h3>
+          <ul>
+            <li>Better held-out accuracy and log loss than the selected baselines.</li>
+            <li>Improved log loss as more pairwise evidence becomes available.</li>
+            <li>A qualitative relationship between observation count and posterior width.</li>
+            <li>A transparent probabilistic mechanism for incorporating opponent strength.</li>
+          </ul>
+        </div>
+
+        <div class="rigor">
+          <div class="mini">Not Yet Established</div>
+          <h3>What would require additional experiments</h3>
+          <ul>
+            <li>Formal probability calibration; log loss alone is not a calibration test.</li>
+            <li>Robustness to distribution shift across game versions, maps, or time periods.</li>
+            <li>Whether mean-field SVI is the best posterior approximation for this task.</li>
+            <li>Agreement between inferred skill rankings and external tournament-level ground truth.</li>
+          </ul>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <section class="section">
+    <div class="wrap">
+
+      <div class="section-head">
+        <div class="section-num">10</div>
+        <div>
+          <h2>Next Research Directions</h2>
+          <p class="lede">
+            The next step is to preserve the model's transparent probabilistic structure while testing richer latent factors and stronger inference diagnostics.
           </p>
         </div>
       </div>
 
       <div class="future-grid">
+
         <div class="future">
-          <b>Time-Varying Skill</b>
-          <span>Model player ability as a dynamic latent process rather than a fixed scalar.</span>
+          <b>Dynamic Skill</b>
+          <span>
+            Replace a fixed skill scalar with a time-varying latent process to capture improvement and decline.
+          </span>
         </div>
 
         <div class="future">
-          <b>Race / Version Effects</b>
-          <span>Separate intrinsic skill from systematic matchup and patch-level variation.</span>
+          <b>Contextual Latent Effects</b>
+          <span>
+            Separate player skill from race, version, map, and other match-specific sources of variation.
+          </span>
         </div>
 
         <div class="future">
-          <b>Contextual Match Factors</b>
-          <span>Condition predictions on map, environment, or additional match metadata.</span>
+          <b>Inference Comparison</b>
+          <span>
+            Compare SVI against a TrueSkill-style expectation-propagation approach to study posterior approximation quality.
+          </span>
         </div>
 
         <div class="future">
-          <b>Alternative Inference</b>
-          <span>Compare SVI against a TrueSkill-style expectation-propagation baseline.</span>
+          <b>Calibration & Reliability</b>
+          <span>
+            Add reliability diagrams, calibration error, and external ranking checks to test whether posterior confidence is trustworthy.
+          </span>
         </div>
+
       </div>
+
     </div>
   </section>
+
 </main>
+
 
 <footer>
   <div class="wrap footer-inner">
